@@ -1,0 +1,173 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+      <h1>Pré-cadastro - Nova Despesa</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Painel de controle</a></li>
+          <li class="breadcrumb-item"><a href="#">Financeiro</a></li>
+          <li class="breadcrumb-item active">Nova despesa (pré-cadastro)</li>
+        </ol>
+      </nav>
+      {% endblock %}
+
+{% block content %}
+
+<style>
+    select, textarea, label, input {
+        padding: 10px;
+        width: 90%
+    }
+    form {
+        width: 100%;
+    }
+</style>
+                                
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Descrição: <br>
+            <select name="descricao">
+                <option value="" disabled>CAIXA GERAL</option>
+                <option value="Aplicações">Aplicações</option>
+                <option value="" disabled>DEDUÇÕES DAS RECEITAS DE REPASSE</option>
+                <option value="Devolução de repasse">Devolução de repasse</option>
+                <option value="" disabled>CAPITAL DE TERCEIROS</option>
+                <option value="Empréstimos">Empréstimos</option>
+                <option value="" disabled>DESPESAS ADMINISTRATIVAS</option>
+                <option value="Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)">Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)</option>
+                <option value="Despesas de consumo (Material Limpeza)">Despesas de consumo (Material Limpeza)</option>
+                <option value="Despesas com subvenções, contribuições e doações">Despesas com subvenções, contribuições e doações</option>
+                <option value="Prestacao de servico por pessoa jurídica">Prestação de serviço por pessoa jurídica</option>
+                <option value="Despesas de alugueis">Despesas de alugueis</option>
+                <option value="Despesas de consumo (Material Expediente)">Despesas de consumo (Material Expediente)</option>
+                <option value="Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)">Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)</option>
+                <option value="Despesas com manutenção e conservação de bens e instalações">Despesas com manutenção e conservação de bens e instalações</option>
+                <option value="Despesas com viagens, diárias e ajuda de custo">Despesas com viagens, diárias e ajuda de custo</option>
+                <option value="Propaganda, Publicidade e Patrocínio">Propaganda, Publicidade e Patrocínio</option>
+                <option value="Multas">Multas</option>
+                <option value="Encargos de depreciação/amortização/exaustão">Encargos de depreciação/amortização/exaustão</option>
+                <option value="Despesa com provisões administrativas">Despesa com provisões administrativas</option>
+                <option value="Outras despesas administrativas">Outras despesas administrativas</option>
+                <option value="" disabled>DESPESAS FINANCEIRAS</option>
+                <option value="Despesas de juros e multas">Despesas de juros e multas</option>
+                <option value="Descontos concedidos">Descontos concedidos</option>
+                <option value="Variações monetárias">Variações monetárias</option>
+                <option value="Outras despesas financeiras">Outras despesas financeiras</option>
+                <option value="" disabled>DESPESAS GERAIS</option>
+                <option value="Locação de máquinas e equipamentos">Locação de máquinas e equipamentos</option>
+                <option value="Compra de máquinas e equipamentos">Compra de máquinas e equipamentos</option>
+                <option value="" disabled>TRIBUTAÇÃO</option>
+                <option value="Impostos (Das)">Impostos (Das)</option>
+                <option value="Taxas (CIM)">Taxas (CIM)</option>
+                <option value="" disabled>HONORÁRIOS DA DIRETORIA</option>
+                <option value="Pro-labore">Pró-Labore</option>
+                <option value="Encargos sociais com a diretoria">Encargos sociais com a diretoria</option>
+                <option value="Ajuda de custos da diretoria">Ajuda de custos da diretoria</option>
+                <option value="Outras despesas com a diretoria">Outras despesas com a diretoria</option>
+                <option value="" disabled>DESPESAS COM EMPREGADOS</option>
+                <option value="Folha de pagamento">Folha de pagamento</option>
+                <option value="Planos de previdência com empregados">Planos de previdência com empregados</option>
+                <option value="Encargos sociais com empregados">Encargos sociais com empregados</option>
+                <option value="Reversão de encargos sociais com empregados">Reversão de encargos sociais com empregados</option>
+                <option value="Outros gastos com empregados">Outros gastos com empregados</option>
+                <option value="Alimentacao">Alimentação</option>
+                <option value="" disabled>DESPESAS COM PESSOAS SEM VÍNCULO EMPREGATÍCIO</option>
+                <option value="Prestacao de servico por pessoa física sem vínculo empregatício">Prestação de serviço por pessoa física sem vínculo empregatício</option>
+                <option value="Encargos sociais com por pessoa física sem vínculo empregatício">Encargos sociais com por pessoa física sem vínculo empregatício</option>
+                <option value="Outros gastos com empregados">Outros gastos com pessoas físicas sem vínculo empregatício</option>
+                <option value="" disabled>DESPESAS PREDIAIS</option>
+                <option value="Material de construção">Material de construção</option>
+                <option value="Outros">OUTROS</option>
+            </select>
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Valor: <br>
+            <input type="text" name="valor" id="valor" placeholder="R$ 1.000.000,00">
+            <br><br>
+        </div>
+    </div>
+    
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 30%;">
+            Data: <br>
+            <input type="date" required="required" name="data">
+            <br><br>
+        </div>
+        <div style="float: left; width: 70%;">
+            Vínculo: <br>
+            <select name="vinculo" id="">
+                <option value="Movimentação entre contas">Movimentação entre contas</option>
+                <option value="Colaboradores" disabled>Colaboradores</option>
+                {% for c in colaboradores %}
+                <option value="{{ c.cpf }}">{{ c.nome }} | {{ c.cpf }}</option>
+                {% endfor %}
+                <option value="Fornecedores" disabled>Fornecedores</option>
+            </select>
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Entidade: <br>
+            <select name="entidade" id="">
+                <option value="Sem vinculo a entidade">Sem vínculo à entidade</option>
+                {% for e in entidades %}
+                <option value="{{ e.id }}">{{ e.razao_social }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Obs: <br>
+            <textarea name="obs">{{ p.obs }}</textarea>
+            <br><br>
+        </div>
+    </div>
+
+    <div style="display: none;">
+        <input id="long" name="long">
+        <input id="lat" name="lat">
+    </div>
+    <br><br>
+    <button style="padding: 10px; border-radius: 10px;" id="botao"><i class="fas fa-save"></i> Salvar</button>
+    <br><br>       
+</form>
+<script>
+    var long=document.getElementById("long");
+    var lat=document.getElementById("lat");
+        if (navigator.geolocation)
+        {
+        navigator.geolocation.getCurrentPosition(showPosition);
+        }
+        else{x.innerHTML="O seu navegador não suporta Geolocalização.";}
+                          
+        function sleep(milliseconds) { 
+            let timeStart = new Date().getTime(); 
+            while (true) { 
+            let elapsedTime = new Date().getTime() - timeStart; 
+            if (elapsedTime > milliseconds) { 
+                break; 
+            } 
+            } 
+        } 
+                          
+        function showPosition(position)
+            {
+            lat.value = position.coords.latitude;
+            long.value = position.coords.longitude;
+            sleep(2);  
+            document.getElementById("formulario").submit();
+            }
+</script>
+
+<script>
+    if (!("{{ msg }}" == "")) {
+        alert("{{ msg }}");
+    }
+</script>
+
+{% endblock %}

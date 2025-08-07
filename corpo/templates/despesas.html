@@ -1,0 +1,64 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+<h1>Despesas</h1>
+<nav>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+    <li class="breadcrumb-item">Painel de controle</li>
+    <li class="breadcrumb-item">Financeiro</li>
+    <li class="breadcrumb-item active">Despesas</li>
+</ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+    <div class="card-body">
+
+      <table class="table table-borderless datatable">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Descrição</th>
+            <th scope="col">Data</th>
+            <th scope="col">Entidade</th>
+            <th scope="col">Vínculo</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for d in despesas %}
+          {% if d.comprovante_pagamento == '' or d.comprovante_pagamento == None or d.nota_fatura == '' or d.nota_fatura == None %}
+          <tr title="Documento ausente">
+            <th style="background-color: #808080;" scope="row"><a style="color: white" href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
+            <td style="background-color: #808080;"><a style="color: white" href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
+            <td style="background-color: #808080; color: white">{{ d.data }}</td>
+            <td style="background-color: #808080; color: white">{{ d.entidade }}</td>
+            <td style="background-color: #808080; color: white">{{ d.vinculo }}</td>
+            <td style="background-color: #808080; color: white"><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
+          </tr>
+          {% else %}
+          <tr>
+            <th scope="row"><a href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
+            <td><a href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
+            <td>{{ d.data }}</td>
+            <td>{{ d.entidade }}</td>
+            <td>{{ d.vinculo }}</td>
+            <td><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
+          </tr>
+          {% endif %}
+          {% endfor %}
+        </tbody>
+        
+      </table>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

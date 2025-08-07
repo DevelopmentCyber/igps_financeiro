@@ -1,0 +1,46 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<style>
+    input {
+        width: 100%;
+        padding: 10px
+    }
+    .logo_lateral {
+        width: 100%
+    }
+</style>
+<header class="py-5">
+    <div class="container px-5 pb-5">
+        <div class="row gx-5 align-items-center">
+            <div class="col-xxl-5">
+                <!-- Header text content-->
+                <div class="text-center text-xxl-start">
+                    <div class="badge bg-gradient-primary-to-secondary text-white mb-4"><div class="text-uppercase">Apoio &middot; Comprometimento &middot; Solidariedade</div></div>
+                    <h1 class="display-3 fw-bolder mb-5"><span class="text-gradient d-inline">Login</span></h1>
+                    <form method="POST">{% csrf_token %}
+                        <br><br>
+                        <input type="text" name="nome" placeholder="Login...">
+                        <br><br>
+                        <input type="password" name="senha" placeholder="Senha...">
+                        <br><br>
+                        <button class="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder">Entrar</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-xxl-7">
+                <!-- Header profile picture-->
+                <div class="d-flex justify-content-center mt-5 mt-xxl-0">
+                    <div class="profile bg-gradient-primary-to-secondary">
+                        <!-- TIP: For best results, use a photo with a transparent background like the demo example below-->
+                        <!-- Watch a tutorial on how to do this on YouTube (link)-->
+                        <img class="logo_lateral" src="/static/assets/igps.png" alt="..." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+{% endblock %}

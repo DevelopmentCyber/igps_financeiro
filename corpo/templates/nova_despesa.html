@@ -1,0 +1,435 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+      <h1>Cadastro - Nova Despesa</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Painel de controle</a></li>
+          <li class="breadcrumb-item"><a href="#">Financeiro</a></li>
+          <li class="breadcrumb-item"><a href="#">Nova despesa (pré-cadastro)</a></li>
+          <li class="breadcrumb-item active">Nova despesa</li>
+        </ol>
+      </nav>
+      {% endblock %}
+
+{% block content %}
+
+<style>
+    select, textarea, label, input {
+        padding: 10px;
+        width: 90%
+    }
+    form {
+        width: 100%;
+    }
+</style>
+                                
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+    {% for p in precadastro %}
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Descrição: <br>
+            <select name="descricao">
+                <option value="" disabled>CAIXA GERAL</option>
+                {% if p.descricao == 'Aplicações' %}
+                <option value="Aplicações" selected>Aplicações</option>
+                <option value="" disabled>DEDUÇÕES DAS RECEITAS DE REPASSE</option>
+                {% else %}
+                <option value="Aplicações">Aplicações</option>
+                <option value="" disabled>DEDUÇÕES DAS RECEITAS DE REPASSE</option>
+                {% endif %}
+
+                {% if p.descricao == 'Devolução de repasse' %}
+                <option value="Devolução de repasse" selected>Devolução de repasse</option>
+                {% else %}
+                <option value="Devolução de repasse">Devolução de repasse</option>
+                {% endif %}
+
+                <option value="" disabled>CAPITAL DE TERCEIROS</option>
+
+                {% if p.descricao == 'Empréstimos' %}
+                <option value="Empréstimos" selected>Empréstimos</option>
+                {% else %}
+                <option value="Empréstimos">Empréstimos</option>
+                {% endif %}
+
+
+                <option value="" disabled>DESPESAS ADMINISTRATIVAS</option>
+
+                {% if p.descricao == 'Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)' %}
+                <option value="Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)" selected>Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)</option>
+                {% else %}
+                <option value="Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)">Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)</option>
+                {% endif %}
+
+                {% if p.descricao == 'Despesas de consumo (Material Limpeza)' %}
+                <option value="Despesas de consumo (Material Limpeza)" selected>Despesas de consumo (Material Limpeza)</option>
+                {% else %}
+                <option value="Despesas de consumo (Material Limpeza)">Despesas de consumo (Material Limpeza)</option>
+                {% endif %}
+
+                {% if p.descricao == 'Despesas com subvenções, contribuições e doações' %}
+                <option value="Despesas com subvenções, contribuições e doações" selected>Despesas com subvenções, contribuições e doações</option>
+                {% else %}
+                <option value="Despesas com subvenções, contribuições e doações">Despesas com subvenções, contribuições e doações</option>
+                {% endif %}
+
+                {% if p.descricao == 'Prestacao de servico por pessoa jurídica' %}
+                <option value="Prestacao de servico por pessoa jurídica" selected>Prestação de serviço por pessoa jurídica</option>
+                {% else %}
+                <option value="Prestacao de servico por pessoa jurídica">Prestação de serviço por pessoa jurídica</option>
+                {% endif %}
+
+                {% if p.descricao == 'Despesas de alugueis' %}
+                <option value="Despesas de alugueis" selected>Despesas de alugueis</option>
+                {% else %}
+                <option value="Despesas de alugueis">Despesas de alugueis</option>
+                {% endif %}
+
+                {% if p.descricao == 'Despesas de consumo (Material Expediente)' %}
+                <option value="Despesas de consumo (Material Expediente)" selected>Despesas de consumo (Material Expediente)</option>
+                {% else %}
+                <option value="Despesas de consumo (Material Expediente)">Despesas de consumo (Material Expediente)</option>
+                {% endif %}
+
+                {% if p.descricao == 'Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)' %}
+                <option value="Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)" selected>Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)</option>
+                {% else %}
+                <option value="Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)">Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)</option>
+                {% endif %}
+
+
+                {% if p.descricao == 'Despesas com manutenção e conservação de bens e instalações' %}
+                <option value="Despesas com manutenção e conservação de bens e instalações" selected>Despesas com manutenção e conservação de bens e instalações</option>
+                {% else %}
+                <option value="Despesas com manutenção e conservação de bens e instalações">Despesas com manutenção e conservação de bens e instalações</option>
+                {% endif %}
+
+                {% if p.descricao == 'Despesas com viagens, diárias e ajuda de custo' %}
+                <option value="Despesas com viagens, diárias e ajuda de custo" selected>Despesas com viagens, diárias e ajuda de custo</option>
+                {% else %}
+                <option value="Despesas com viagens, diárias e ajuda de custo">Despesas com viagens, diárias e ajuda de custo</option>
+                {% endif %}
+
+                {% if p.descricao == 'Propaganda, Publicidade e Patrocínio' %}
+                <option value="Propaganda, Publicidade e Patrocínio" selected>Propaganda, Publicidade e Patrocínio</option>
+                {% else %}
+                <option value="Propaganda, Publicidade e Patrocínio">Propaganda, Publicidade e Patrocínio</option>
+                {% endif %}
+
+                {% if p.descricao == 'Multas' %}
+                <option value="Multas" selected>Multas</option>
+                {% else %}
+                <option value="Multas">Multas</option>
+                {% endif %}
+
+                {% if p.descricao == 'Encargos de depreciação/amortização/exaustão' %}
+                <option value="Encargos de depreciação/amortização/exaustão" selected>Encargos de depreciação/amortização/exaustão</option>
+                {% else %}
+                <option value="Encargos de depreciação/amortização/exaustão">Encargos de depreciação/amortização/exaustão</option>
+                {% endif %}
+
+                {% if p.descricao == 'Despesa com provisões administrativas' %}
+                <option value="Despesa com provisões administrativas" selected>Despesa com provisões administrativas</option>
+                {% else %}
+                <option value="Despesa com provisões administrativas">Despesa com provisões administrativas</option>
+                {% endif %}
+
+                {% if p.descricao == 'Outras despesas administrativas' %}
+                <option value="Outras despesas administrativas">Outras despesas administrativas</option>
+                {% else %}
+                <option value="Outras despesas administrativas">Outras despesas administrativas</option>
+                {% endif %}
+
+                <option value="" disabled>DESPESAS FINANCEIRAS</option>
+
+                {% if p.descricao == 'Despesas de juros e multas' %}
+                <option value="Despesas de juros e multas" selected>Despesas de juros e multas</option>
+                {% else %}
+                <option value="Despesas de juros e multas">Despesas de juros e multas</option>
+                {% endif %}
+
+                {% if p.descricao == 'Descontos concedidos' %}
+                <option value="Descontos concedidos" selected>Descontos concedidos</option>
+                {% else %}
+                <option value="Descontos concedidos">Descontos concedidos</option>
+                {% endif %}
+
+                {% if p.descricao == 'Variações monetárias' %}
+                <option value="Variações monetárias" selected>Variações monetárias</option>
+                {% else %}
+                <option value="Variações monetárias">Variações monetárias</option>
+                {% endif %}
+
+                {% if p.descricao == 'Outras despesas financeiras' %}
+                <option value="Outras despesas financeiras" selected>Outras despesas financeiras</option>
+                {% else %}
+                <option value="Outras despesas financeiras">Outras despesas financeiras</option>
+                {% endif %}
+                
+                <option value="" disabled>DESPESAS GERAIS</option>
+
+                {% if p.descricao == 'Locação de máquinas e equipamentos' %}
+                <option value="Locação de máquinas e equipamentos" selected>Locação de máquinas e equipamentos</option>
+                {% else %}
+                <option value="Locação de máquinas e equipamentos">Locação de máquinas e equipamentos</option>
+                {% endif %}
+
+                {% if p.descricao == 'Compra de máquinas e equipamentos' %}
+                <option value="Compra de máquinas e equipamentos" selected>Compra de máquinas e equipamentos</option>
+                {% else %}
+                <option value="Compra de máquinas e equipamentos">Compra de máquinas e equipamentos</option>
+                {% endif %}
+
+                <option value="" disabled>TRIBUTAÇÃO</option>
+
+                {% if p.descricao == 'Impostos (Das)' %}
+                <option value="Impostos (Das)" selected>Impostos (Das)</option>
+                {% else %}
+                <option value="Impostos (Das)">Impostos (Das)</option>
+                {% endif %}
+
+                {% if p.descricao == 'Taxas (CIM)' %}
+                <option value="Taxas (CIM)" selected>Taxas (CIM)</option>
+                {% else %}
+                <option value="Taxas (CIM)">Taxas (CIM)</option>
+                {% endif %}
+
+                <option value="" disabled>HONORÁRIOS DA DIRETORIA</option>
+
+                {% if p.descricao == 'Encargos sociais com a diretoria' %}
+                <option value="Encargos sociais com a diretoria">Encargos sociais com a diretoria</option>
+                {% else %}
+                <option value="Encargos sociais com a diretoria">Encargos sociais com a diretoria</option>
+                {% endif %}
+                
+                {% if p.descricao == 'Ajuda de custos da diretoria' %}
+                <option value="Ajuda de custos da diretoria" selected>Ajuda de custos da diretoria</option>
+                {% else %}
+                <option value="Ajuda de custos da diretoria">Ajuda de custos da diretoria</option>
+                {% endif %}
+
+                {% if p.descricao == 'Outras despesas com a diretoria' %}
+                <option value="Outras despesas com a diretoria" selected>Outras despesas com a diretoria</option>
+                {% else %}
+                <option value="Outras despesas com a diretoria">Outras despesas com a diretoria</option>
+                {% endif %}
+                
+                <option value="" disabled>DESPESAS COM EMPREGADOS</option>
+
+                {% if p.descricao == 'Folha de pagamento' %}
+                <option value="Folha de pagamento" selected>Folha de pagamento</option>
+                {% else %}
+                <option value="Folha de pagamento">Folha de pagamento</option>
+                {% endif %}
+
+                {% if p.descricao == 'Planos de previdência com empregados' %}
+                <option value="Planos de previdência com empregados" selected>Planos de previdência com empregados</option>
+                {% else %}
+                <option value="Planos de previdência com empregados">Planos de previdência com empregados</option>
+                {% endif %}
+
+                {% if p.descricao == 'Encargos sociais com empregados' %}  
+                <option value="Encargos sociais com empregados" selected>Encargos sociais com empregados</option>
+                {% else %}
+                <option value="Encargos sociais com empregados">Encargos sociais com empregados</option>
+                {% endif %}
+
+                {% if p.descricao == 'Reversão de encargos sociais com empregados' %}
+                <option value="Reversão de encargos sociais com empregados" selected>Reversão de encargos sociais com empregados</option>
+                {% else %}
+                <option value="Reversão de encargos sociais com empregados">Reversão de encargos sociais com empregados</option>
+                {% endif %}
+
+                {% if p.descricao == 'Outros gastos com empregados' %}
+                <option value="Outros gastos com empregados" selected>Outros gastos com empregados</option>
+                {% else %}
+                <option value="Outros gastos com empregados">Outros gastos com empregados</option>
+                {% endif %}
+
+                {% if p.descricao == 'Alimentacao' %}
+                <option value="Alimentacao" selected>Alimentação</option>
+                {% else %}
+                <option value="Alimentacao">Alimentação</option>
+                {% endif %}
+
+                <option value="" disabled>DESPESAS COM PESSOAS SEM VÍNCULO EMPREGATÍCIO</option>
+
+                {% if p.descricao == 'Prestacao de servico por pessoa física sem vínculo empregatício' %}
+                <option value="Prestacao de servico por pessoa física sem vínculo empregatício" selected>Prestação de serviço por pessoa física sem vínculo empregatício</option>
+                {% else %}
+                <option value="Prestacao de servico por pessoa física sem vínculo empregatício">Prestação de serviço por pessoa física sem vínculo empregatício</option>
+                {% endif %}
+
+                {% if p.descricao == 'Encargos sociais com por pessoa física sem vínculo empregatício' %}
+                <option value="Encargos sociais com por pessoa física sem vínculo empregatício" selected>Encargos sociais com por pessoa física sem vínculo empregatício</option>
+                {% else %}
+                <option value="Encargos sociais com por pessoa física sem vínculo empregatício">Encargos sociais com por pessoa física sem vínculo empregatício</option>
+                {% endif %}
+
+                {% if p.descricao == 'Outros gastos com empregados' %}
+                <option value="Outros gastos com empregados" selected>Outros gastos com pessoas físicas sem vínculo empregatício</option>
+                {% else %}
+                <option value="Outros gastos com empregados">Outros gastos com pessoas físicas sem vínculo empregatício</option>
+                {% endif %}
+                
+                <option value="" disabled>DESPESAS PREDIAIS</option>
+
+                {% if p.descricao == 'Outros gastos com empregados' %}
+                <option value="Material de construção" selected>Material de construção</option>
+                {% else %}
+                <option value="Material de construção">Material de construção</option>
+                {% endif %}
+
+                {% if p.descricao == 'Outros' %}
+                <option value="Outros">OUTROS</option>
+                {% else %}
+                <option value="Outros">OUTROS</option>
+                {% endif %}
+            </select>
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Valor: <br>
+            <input type="text" name="valor" required="required" value="{{ p.valor }}" id="valor" placeholder="R$ 1.000.000,00">
+            <br><br>
+        </div>
+    </div>
+    
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 30%;">
+            Data: <br>
+            <input type="date" required="required" value="{{ p.data }}" name="data">
+            <br><br>
+        </div>
+        <div style="float: left; width: 70%;">
+            Vínculo: <br>
+            <select name="vinculo" id="">
+                <option value="Movimentação entre contas">Movimentação entre contas</option>
+                <option value="Colaboradores" disabled>Colaboradores</option>
+                {% for c in colaboradores %}
+                    {% if c.cpf == p.vinculo %}
+                    <option value="{{ c.cpf }}" selected>{{ c.nome }} | {{ c.cpf }}</option>
+                    {% else %}
+                    <option value="{{ c.cpf }}">{{ c.nome }} | {{ c.cpf }}</option>
+                    {% endif %}
+                {% endfor %}
+                <option value="Fornecedores" disabled>Fornecedores</option>
+            </select>
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Entidade: <br>
+            <select name="entidade" id="">
+                <option value="Sem vinculo a entidade">Sem vínculo à entidade</option>
+                {% for e in entidades %}
+                    {% if e.id|stringformat:"s" == p.entidade %}
+                    <option value="{{ e.id }}" selected>{{ e.razao_social }}</option>
+                    {% else %}
+                    <option value="{{ e.id }}">{{ e.razao_social }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Obs: <br>
+            <textarea name="obs">{{ p.obs }}</textarea>
+            <br><br>
+        </div>
+    </div>
+    {% endfor %}
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            <br>
+            <input style="display: none;" type="file" name="comprovante_pagamento" accept="*.jpeg, *.png, *.jpg" id="anexo_comprovante_pagamento">
+            <b>Comprovante de pagamento:</b> <br>
+            <label for="anexo_comprovante_pagamento" id="campo-comprovante_pagamento" style="border: 1px dashed black; background-color: white; width: 80%; height: 400px; text-align: center; margin: 0 auto">
+                <br><br>
+                <svg style="width: 50%; text-align: center; margin: 0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+            </label>
+            <script>
+                function readImageComprovantePagamento() {
+                    if (this.files && this.files[0]) {
+                        var file = new FileReader();
+                        file.onload = function(e) {
+                            document.getElementById('campo-comprovante_pagamento').innerHTML = '<iframe src="" id="comprovante_pagamento-preview" style="width: 100%; height: 370px" alt="" />'
+                            document.getElementById("comprovante_pagamento-preview").src = e.target.result;
+                        };       
+                        file.readAsDataURL(this.files[0]);
+                    }
+                }
+                document.getElementById("anexo_comprovante_pagamento").addEventListener("change", readImageComprovantePagamento, false);
+            </script>
+        </div>
+        <div style="float: left; width: 50%;">
+            <br>
+            <input style="display: none;" type="file" name="nota_fatura" accept="*.jpeg, *.png, *.jpg" id="anexo_nota_fatura">
+            <b>Nota fiscal/Fatura/Contracheque:</b> <br>
+            <label for="anexo_nota_fatura" id="campo-nota_fatura" style="border: 1px dashed black; background-color: white; width: 80%; height: 400px; text-align: center; margin: 0 auto">
+                <br><br>
+                <svg style="width: 50%; text-align: center; margin: 0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+            </label>
+            <script>
+                function readImageNota() {
+                    if (this.files && this.files[0]) {
+                        var file = new FileReader();
+                        file.onload = function(e) {
+                            document.getElementById('campo-nota_fatura').innerHTML = '<iframe src="" id="nota_fatura-preview" style="width: 100%; height: 370px" alt="" />'
+                            document.getElementById("nota_fatura-preview").src = e.target.result;
+                        };       
+                        file.readAsDataURL(this.files[0]);
+                    }
+                }
+                document.getElementById("anexo_nota_fatura").addEventListener("change", readImageNota, false);
+            </script>
+        </div>
+    </div>
+    
+    <div style="display: none;">
+        <input id="long" name="long">
+        <input id="lat" name="lat">
+    </div>
+    <br><br>
+    <button style="padding: 10px; border-radius: 10px;" id="botao"><i class="fas fa-save"></i> Salvar</button>
+    <br><br>       
+</form>
+<script>
+    var long=document.getElementById("long");
+    var lat=document.getElementById("lat");
+        if (navigator.geolocation)
+        {
+        navigator.geolocation.getCurrentPosition(showPosition);
+        }
+        else{x.innerHTML="O seu navegador não suporta Geolocalização.";}
+                          
+        function sleep(milliseconds) { 
+            let timeStart = new Date().getTime(); 
+            while (true) { 
+            let elapsedTime = new Date().getTime() - timeStart; 
+            if (elapsedTime > milliseconds) { 
+                break; 
+            } 
+            } 
+        } 
+                          
+        function showPosition(position)
+            {
+            lat.value = position.coords.latitude;
+            long.value = position.coords.longitude;
+            sleep(2);  
+            document.getElementById("formulario").submit();
+            }
+</script>
+
+<script>
+    if (!("{{ msg }}" == "")) {
+        alert("{{ msg }}");
+    }
+</script>
+
+{% endblock %}
