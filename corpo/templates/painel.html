@@ -39,7 +39,7 @@
   <header id="header" class="header fixed-top d-flex align-items-center">
 
     <div class="d-flex align-items-center justify-content-between">
-      <a href="https://igps.net.br/painel/" class="logo d-flex align-items-center">
+      <a href="/painel/" class="logo d-flex align-items-center">
         <img src="/static/assets/igps.png" alt="">
         <span class="d-none d-lg-block">IGPS</span>
       </a>
@@ -78,7 +78,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="https://igps.net.br/painel/">
+        <a class="nav-link " href="/painel/">
           <i class="bi bi-grid"></i>
           <span>Painel de controle</span>
         </a>
@@ -141,6 +141,26 @@
             </a>
             <a href="/pre_nova_despesa/">
               <i class="bi bi-circle"></i><span>Lançar nova despesa</span>
+            </a>
+          </li>
+          <li>
+            <a href="/fornecedores/">
+              <i class="bi bi-circle"></i><span>Fornecedores</span>
+            </a>
+          </li>
+          <li>
+            <a href="/novo_fornecedor/">
+              <i class="bi bi-circle"></i><span>Novo Fornecedor</span>
+            </a>
+          </li>
+          <li>
+            <a href="/centrosdecusto/">
+              <i class="bi bi-circle"></i><span>Centros de Custo</span>
+            </a>
+          </li>
+          <li>
+            <a href="/novo_centrocusto/">
+              <i class="bi bi-circle"></i><span>Novo Centro de Custo</span>
             </a>
           </li>
         </ul>
@@ -225,7 +245,7 @@
       <h1>Painel de controle</h1>
       <nav>
         <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="https://igps.net.br/">Página inicial</a></li>
+          <li class="breadcrumb-item"><a href="/painel/">Página inicial</a></li>
           <li class="breadcrumb-item active">Painel de controle</li>
         </ol>
       </nav>
@@ -265,8 +285,10 @@
   <!-- Template Main JS File -->
   <script src="/static/assets_painel/js/main.js"></script>
 
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <!--<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.15/jquery.mask.min.js"></script>
   <script>
       $(document).ready(function(){
@@ -274,10 +296,9 @@
           $('input[name=cpf]').mask('000.000.000-00');
           $('input[name=cnpj]').mask('00.000.000/0000-00');
           $('input[id=valor]').mask('0.000.000.000.000,00', {reverse: true});
+          $('input[name=valor]').mask('0.000.000.000.000,00', {reverse: true});
       });
   </script>
-  <!-- jQuery -->
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
   <!-- Select2 JS -->
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>

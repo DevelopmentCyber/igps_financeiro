@@ -1,0 +1,210 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+      <h1>Fornecedor</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Painel de controle</a></li>
+          <li class="breadcrumb-item"><a href="#">Financeiro</a></li>
+          <li class="breadcrumb-item"><a href="#">Novo fornecedor</a></li>
+        </ol>
+      </nav>
+      {% endblock %}
+
+{% block content %}
+
+<style>
+    select, textarea, label, input {
+        padding: 10px;
+        width: 90%
+    }
+    form {
+        width: 100%;
+    }
+</style>
+                                
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+    {% for f in fornecedor %}
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 30%;">
+            CNPJ: <br>
+            <input type="text" onblur="consultarReceita(this.value)" name="cnpj" value="{{ f.cnpj }}" required="required" id="cnpj" placeholder="00.000.000/0000-00">
+        </div>
+        <div style="float: left; width: 70%;">
+            Razão Social: <br>
+            <input type="text" name="razao_social" id="nome" required="required" value="{{ f.razao_social }}" placeholder="DEVCYBER LTDA">
+            <br><br>
+        </div>
+    </div>
+    
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 30%;">
+            Data de abertura: <br>
+            <input type="text" required="required" id="abertura" value="{{ f.data_abertura }}" name="data_abertura">
+            <br><br>
+        </div>
+        <div style="float: left; width: 70%;">
+            E-mail: <br>
+            <input type="email" required="required" name="email" value="{{ f.email }}" placeholder="seu@email.com">
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 20%;">
+            Telefone: <br>
+            <input type="text" required="required" name="telefone" value="{{ f.telefone }}" id="telefone" placeholder="(00) 0 0000-0000">
+            <br><br>
+        </div>
+        <div style="float: left; width: 80%;">
+            Atuação: <br>
+            <textarea id="atuacao" name="atuacao">{{ f.atuacao }}</textarea>
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 25%;">
+            CEP: <br>
+            <input type="text" required="required" id="cep" name="cep" value="{{ f.cep }}" placeholder="00000000">
+            <br><br>
+        </div>
+        <div style="float: left; width: 75%;">
+            Logradouro: <br>
+            <input type="text" required="required" id="logradouro" value="{{ f.rua }}" name="rua" placeholder="Rua Sem Fim">
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Número do imóvel: <br>
+            <input type="number" required="required" id="n" name="n" value="{{ f.n }}" placeholder="100">
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Bairro: <br>
+            <input type="text" required="required" id="bairro" name="bairro" value="{{ f.bairro }}" placeholder="Casa Forte">
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Município: <br>
+            <input type="text" required="required" id="municipio" name="cidade" value="{{ f.cidade }}" placeholder="Fortaleza">
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            UF: <br>
+            <input type="text" required="required" id="uf" name="uf" value="{{ f.uf }}" placeholder="PB">
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            <br>
+            <input style="display: none;" type="file" name="contrato_social" accept="*.jpeg, *.png, *.jpg" id="anexo_contrato_social">
+            <b>Contrato social:</b> <br>
+            <label for="anexo_contrato_social" id="campo-contrato_social" style="border: 1px dashed black; background-color: white; width: 80%; height: 400px; text-align: center; margin: 0 auto">
+                <br><br>
+                <svg style="width: 50%; text-align: center; margin: 0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+            </label>
+            <script>
+                function readImageComprovantePagamento() {
+                    if (this.files && this.files[0]) {
+                        var file = new FileReader();
+                        file.onload = function(e) {
+                            document.getElementById('campo-contrato_social').innerHTML = '<iframe src="" id="contrato_social-preview" style="width: 100%; height: 370px" alt="" />'
+                            document.getElementById("contrato_social-preview").src = e.target.result;
+                        };       
+                        file.readAsDataURL(this.files[0]);
+                    }
+                }
+                document.getElementById("anexo_contrato_social").addEventListener("change", readImageComprovantePagamento, false);
+            </script>
+        </div>
+        <div style="float: left; width: 50%;">
+            <br>
+            <input style="display: none;" type="file" name="cartao_cnpj" accept="*.jpeg, *.png, *.jpg" id="anexo_cartao_cnpj">
+            <b>Cartão CNPJ:</b> <br>
+            <label for="anexo_cartao_cnpj" id="campo-cartao_cnpj" style="border: 1px dashed black; background-color: white; width: 80%; height: 400px; text-align: center; margin: 0 auto">
+                <br><br>
+                <svg style="width: 50%; text-align: center; margin: 0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
+            </label>
+            <script>
+                function readImageNota() {
+                    if (this.files && this.files[0]) {
+                        var file = new FileReader();
+                        file.onload = function(e) {
+                            document.getElementById('campo-cartao_cnpj').innerHTML = '<iframe src="" id="cartao_cnpj-preview" style="width: 100%; height: 370px" alt="" />'
+                            document.getElementById("cartao_cnpj-preview").src = e.target.result;
+                        };       
+                        file.readAsDataURL(this.files[0]);
+                    }
+                }
+                document.getElementById("anexo_cartao_cnpj").addEventListener("change", readImageNota, false);
+            </script>
+            <br><br>
+        </div>
+    </div>
+    {% endfor %}
+    <div style="display: none;">
+        <input id="long" name="long">
+        <input id="lat" name="lat">
+    </div>
+    <br><br>
+    <button style="padding: 10px; border-radius: 5px; border: 1px solid black; background-color: greenyellow;" id="botao"><i class="fas fa-save"></i> Salvar</button>
+    <br><br>       
+</form>
+<script>
+    function consultarReceita(cnpj) {
+    (async () => {
+        const rawResponse = await fetch('/consulta_cnpj/', {
+            method: 'POST',
+            headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({cnpj: cnpj.replace('.', '').replace('.', '').replace('.', '').replace('/', '').replace('-', '')})
+        });
+        const content = await rawResponse.json();
+        //console.log(String(content['nome']))
+        document.getElementById('nome').value = String(content['nome']);
+        document.getElementById('abertura').value = String(content['abertura']);
+        document.getElementById('cep').value = String(content['cep']);
+        document.getElementById('logradouro').value = String(content['logradouro']);
+        document.getElementById('n').value = String(content['numero']);
+        document.getElementById('municipio').value = String(content['municipio']);
+        document.getElementById('bairro').value = String(content['bairro']);
+        document.getElementById('uf').value = String(content['uf']);
+
+        const atividades = [];
+
+        // adiciona a principal
+        if (content.atividade_principal?.length) {
+        atividades.push(`Principal - ${content.atividade_principal[0].text} (${content.atividade_principal[0].code})`);
+        }
+
+        // adiciona as secundárias
+        if (content.atividades_secundarias?.length) {
+        content.atividades_secundarias.forEach(a => {
+            atividades.push(`${a.text} (${a.code})`);
+        });
+        }
+
+        // junta tudo em um texto com quebras de linha
+        document.getElementById("atuacao").innerHTML = atividades.join("\n");
+        
+    })();
+}
+</script>
+<script>
+    if (!("{{ msg }}" == "")) {
+        alert("{{ msg }}");
+    }
+</script>
+
+{% endblock %}

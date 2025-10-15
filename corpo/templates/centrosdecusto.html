@@ -1,0 +1,46 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+<h1>Centros de custo</h1>
+<nav>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+    <li class="breadcrumb-item">Painel de controle</li>
+    <li class="breadcrumb-item">Financeiro</li>
+    <li class="breadcrumb-item active">Centros de custo</li>
+</ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+    <div class="card-body">
+
+      <table class="table table-borderless datatable">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Nome</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in centrosdecusto %}
+          <tr>
+            <th scope="row"><a href="/editar_centrocusto/{{ c.id }}/">{{ c.id }}</a></th>
+            <td><a href="/editar_centrocusto/{{ c.id }}/">{{ c.nome }}</a></td>
+            <td><a href="/deletar_centrodecusto/{{ c.id }}/" class="badge bg-danger">Apagar</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        
+      </table>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

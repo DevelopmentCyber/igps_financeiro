@@ -23,6 +23,7 @@
           <tr>
             <th scope="col">ID</th>
             <th scope="col">Descrição</th>
+            <th scope="col">Valor</th>
             <th scope="col">Data</th>
             <th scope="col">Entidade</th>
             <th scope="col">Vínculo</th>
@@ -36,9 +37,10 @@
           <tr title="Documento ausente">
             <th style="background-color: #808080;" scope="row"><a style="color: white" href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
             <td style="background-color: #808080;"><a style="color: white" href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
+            <td style="background-color: #808080; color: white">{{ d.valor }}</td>
             <td style="background-color: #808080; color: white">{{ d.data }}</td>
             <td style="background-color: #808080; color: white">{{ d.entidade }}</td>
-            <td style="background-color: #808080; color: white">{{ d.vinculo }}</td>
+            <td style="background-color: #808080; color: white">{{ d.nome_vinculo }}</td>
             <td style="background-color: #808080; color: white"><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
           {% else %}
@@ -46,8 +48,9 @@
             <th scope="row"><a href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
             <td><a href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
             <td>{{ d.data }}</td>
+            <td>{{ d.data }}</td>
             <td>{{ d.entidade }}</td>
-            <td>{{ d.vinculo }}</td>
+            <td>{{ d.nome_vinculo }}</td>
             <td><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
           {% endif %}

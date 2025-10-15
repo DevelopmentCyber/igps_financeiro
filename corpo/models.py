@@ -1,6 +1,27 @@
 from django.db import models
 
 # Create your models here.
+class CentroCusto(models.Model):
+    nome = models.CharField(max_length=200)
+    status = models.CharField(max_length=200)
+
+class Fornecedor(models.Model):
+    razao_social = models.CharField(max_length=200)
+    cnpj = models.CharField(max_length=200)
+    cep = models.CharField(max_length=200)
+    rua = models.CharField(max_length=200)
+    n = models.CharField(max_length=200)
+    bairro = models.CharField(max_length=200)
+    cidade = models.CharField(max_length=200)
+    uf = models.CharField(max_length=200)
+    telefone = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
+    contrato_social = models.FileField(null=True)
+    cartao_cnpj = models.FileField(null=True)
+    data_abertura = models.CharField(max_length=200)
+    atuacao = models.CharField(max_length=200)
+    status = models.CharField(max_length=200)
+
 class PreCadastroContasPagar(models.Model):
     usuario_pre_cadastro = models.CharField(max_length=200)
     valor = models.CharField(max_length=200)
@@ -12,6 +33,7 @@ class PreCadastroContasPagar(models.Model):
     long = models.CharField(max_length=200)
     lat = models.CharField(max_length=200)
     entidade = models.CharField(max_length=200)
+    centrodecusto = models.CharField(max_length=200, null=True)
     #ARQUIVOS
     comprovante_pagamento = models.FileField(null=True)
     nota_fatura = models.FileField(null=True)#Nota fiscal, Fatura, Contracheque
@@ -19,6 +41,7 @@ class PreCadastroContasPagar(models.Model):
 class ContasPagar(models.Model):
     valor = models.CharField(max_length=200)
     vinculo = models.CharField(max_length=200)#Colaborador, Fornecedor, Movimentacao entre contas
+    nome_vinculo = models.CharField(max_length=200, null=True)
     data = models.CharField(max_length=200)
     usuario_cadastro = models.CharField(max_length=200, null=True)
     obs = models.CharField(max_length=5000, null=True)
@@ -27,6 +50,7 @@ class ContasPagar(models.Model):
     long = models.CharField(max_length=200)
     lat = models.CharField(max_length=200)
     entidade = models.CharField(max_length=200)
+    centrodecusto = models.CharField(max_length=200, null=True)
     #ARQUIVOS
     comprovante_pagamento = models.FileField(null=True)
     nota_fatura = models.FileField(null=True)#Nota fiscal, Fatura, Contracheque

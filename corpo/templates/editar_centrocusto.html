@@ -1,0 +1,47 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+      <h1>Cadastro - Novo centro de custo</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Painel de controle</a></li>
+          <li class="breadcrumb-item"><a href="#">Financeiro</a></li>
+          <li class="breadcrumb-item"><a href="#">Novo centro de custo</a></li>
+        </ol>
+      </nav>
+      {% endblock %}
+
+{% block content %}
+
+<style>
+    select, textarea, label, input {
+        padding: 10px;
+        width: 90%
+    }
+    form {
+        width: 100%;
+    }
+</style>
+                                
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+    <div style="float: left; width: 100%">
+        {% for c in centrodecusto %}
+        <div style="float: left; width: 100%;">
+            <b>Nome:</b> <br>
+            <input type="text" name="nome" required="required" id="nome" value="{{ c.nome }}" placeholder="DESPESAS COM SAÚDE - POÇÃO AL">
+            <br><br>
+        </div>
+        {% endfor %}
+    </div>
+    <br><br>
+    <button style="padding: 10px; border-radius: 5px; border: 1px solid black; background-color: greenyellow;" id="botao"><i class="fas fa-save"></i> Salvar</button>
+    <br><br>       
+</form>
+<script>
+    if (!("{{ msg }}" == "")) {
+        alert("{{ msg }}");
+    }
+</script>
+
+{% endblock %}

@@ -105,6 +105,9 @@
                 <option value="{{ c.cpf }}">{{ c.nome }} | {{ c.cpf }}</option>
                 {% endfor %}
                 <option value="Fornecedores" disabled>Fornecedores</option>
+                {% for f in fornecedores %}
+                <option value="{{ f.cnpj }}">{{ f.razao_social }} | {{ f.cnpj }}</option>
+                {% endfor %}
             </select>
             <br><br>
         </div>
@@ -122,6 +125,17 @@
             <br><br>
         </div>
         <div style="float: left; width: 50%;">
+            Centro de custo: <br>
+            <select name="centrodecusto" id="">
+                {% for c in centrosdecusto %}
+                <option name="{{ c.id }}">{{ c.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 100%;">
             Obs: <br>
             <textarea name="obs">{{ p.obs }}</textarea>
             <br><br>

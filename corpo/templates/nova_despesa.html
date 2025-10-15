@@ -306,16 +306,24 @@
         <div style="float: left; width: 70%;">
             Vínculo: <br>
             <select name="vinculo" id="">
-                <option value="Movimentação entre contas">Movimentação entre contas</option>
+                <option value="0-Movimentação entre contas">Movimentação entre contas</option>
                 <option value="Colaboradores" disabled>Colaboradores</option>
                 {% for c in colaboradores %}
                     {% if c.cpf == p.vinculo %}
-                    <option value="{{ c.cpf }}" selected>{{ c.nome }} | {{ c.cpf }}</option>
+                    <option value="{{ c.cpf }}-{{ c.nome }}" selected>{{ c.nome }} | {{ c.cpf }}</option>
                     {% else %}
-                    <option value="{{ c.cpf }}">{{ c.nome }} | {{ c.cpf }}</option>
+                    <option value="{{ c.cpf }}-{{ c.nome }}">{{ c.nome }} | {{ c.cpf }}</option>
                     {% endif %}
                 {% endfor %}
+                
                 <option value="Fornecedores" disabled>Fornecedores</option>
+                {% for f in fornecedores %}
+                    {% if f.cnpj == p.vinculo %}
+                    <option value="{{ f.cnpj }}-{{ f.razao_social }}" selected>{{ f.razao_social }} | {{ f.cnpj }}</option>
+                    {% else %}
+                    <option value="{{ f.cnpj }}-{{ f.razao_social }}">{{ f.razao_social }} | {{ f.cnpj }}</option>
+                    {% endif %}
+                {% endfor %}
             </select>
             <br><br>
         </div>
@@ -337,6 +345,22 @@
             <br><br>
         </div>
         <div style="float: left; width: 50%;">
+            Centro de custo: <br>
+            <select name="centrodecusto" id="">
+                {% for c in centrosdecusto %}
+                    {% if p.centrodecusto == c.id %}
+                        <option value="{{ c.d }}" selected>{{ c.nome }}</option>
+                    {% else %}
+                        <option value="{{ c.d }}">{{ c.nome }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <br><br>
+        </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 100%;">
             Obs: <br>
             <textarea name="obs">{{ p.obs }}</textarea>
             <br><br>
