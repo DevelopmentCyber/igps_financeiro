@@ -10,6 +10,8 @@
     <li class="breadcrumb-item active">Despesas</li>
 </ol>
 </nav>
+<b>Valor total: </b> R$ <i id="valor"></i> <b>Valor total de pagamentos pendentes: </b> R$ <i id="valor_aberto"></i> <a style="float: right" class="badge bg-danger" target="_blank" href="/relatorio_despesas/">Relatório GERAL em PDF</a> <a style="float: right" class="badge bg-success" href="#">Relatório GERAL em Excel</a>
+<script>x = 0; y = 0</script>
 {% endblock %}
 
 {% block content %}
@@ -42,6 +44,9 @@
             <td style="background-color: #808080; color: white">{{ d.entidade }}</td>
             <td style="background-color: #808080; color: white">{{ d.nome_vinculo }}</td>
             <td style="background-color: #808080; color: white"><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
+            <script>
+              y = y + Number.parseFloat('{{ d.valor }}'.replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace(',', '.'))
+            </script>
           </tr>
           {% else %}
           <tr>
@@ -54,7 +59,17 @@
             <td><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
           {% endif %}
+          <script>
+            x = x + Number.parseFloat('{{ d.valor }}'.replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace(',', '.'))
+          </script>
           {% endfor %}
+          <script>
+            x = Math.round(x, 2)
+            document.getElementById('valor').textContent = String(x.toFixed(2))
+
+            y = Math.round(y, 2)
+            document.getElementById('valor_aberto').textContent = String(y.toFixed(2))
+          </script>
         </tbody>
         
       </table>

@@ -349,9 +349,9 @@
             <select name="centrodecusto" id="">
                 {% for c in centrosdecusto %}
                     {% if p.centrodecusto == c.id %}
-                        <option value="{{ c.d }}" selected>{{ c.nome }}</option>
+                        <option value="{{ c.id }}" selected>{{ c.nome }}</option>
                     {% else %}
-                        <option value="{{ c.d }}">{{ c.nome }}</option>
+                        <option value="{{ c.id }}">{{ c.nome }}</option>
                     {% endif %}
                 {% endfor %}
             </select>

@@ -24,6 +24,7 @@
             <th scope="col">ID</th>
             <th scope="col">Nome</th>
             <th scope="col"></th>
+            <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
@@ -31,6 +32,8 @@
           <tr>
             <th scope="row"><a href="/editar_centrocusto/{{ c.id }}/">{{ c.id }}</a></th>
             <td><a href="/editar_centrocusto/{{ c.id }}/">{{ c.nome }}</a></td>
+            <td><a href="/despesas_centrocusto/{{ c.id }}/" class="badge bg-success">Ver despesas</a></td>
+            <td><a href="/relatorio_despesas_centro_custo/{{ c.id }}/" class="badge bg-success">Relatório</a></td>
             <td><a href="/deletar_centrodecusto/{{ c.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
           {% endfor %}

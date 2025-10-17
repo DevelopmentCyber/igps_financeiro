@@ -18,6 +18,22 @@ from .ip_to_endereco import *
 #################################
 
 @login_required
+def relatorio_despesas_centro_custo(request, cod):
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    log = Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado)
+    log.save()
+    return render(request, 'relatorio_despesas.html', {'permissao': request.user.last_name, 'despesas': ContasPagar.objects.filter(status='', centrodecusto=cod),
+    'usuario': request.user.username, 'cod': log.id})
+
+@login_required
+def despesas_centrocusto(request, cod):
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'despesas.html', {'permissao': request.user.last_name, 'despesas': ContasPagar.objects.filter(status='', centrodecusto=cod).order_by('-id')})
+
+@login_required
 def editar_centrocusto(request, cod):
     msg = ''
     if request.method == 'POST':
@@ -180,12 +196,42 @@ def novo_fornecedor(request):
 ################################
 
 @login_required
-def ver_despesa(request, cod):
+def relatorio_despesas(request):
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
-    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    log = Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado)
+    log.save()
+    return render(request, 'relatorio_despesas.html', {'permissao': request.user.last_name, 'despesas': ContasPagar.objects.filter(status=''),
+    'usuario': request.user.username, 'cod': log.id, 'x': 1})
+
+@login_required
+def ver_despesa(request, cod):
+    msg = ''
+    if request.method == 'POST':
+        comprovante_pagamento = request.FILES['comprovante_pagamento']
+        nota_fatura = request.FILES['nota_fatura']
+
+        if comprovante_pagamento != None and comprovante_pagamento != '':
+            for c in ContasPagar.objects.filter(id=cod):
+                c.comprovante_pagamento = comprovante_pagamento
+                c.save()
+
+        if nota_fatura != None and nota_fatura != '':
+            for c in ContasPagar.objects.filter(id=cod):
+                c.nota_fatura = nota_fatura
+                c.save()
+
+        msg = 'Salvo!'
+
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post=request.POST.items(), dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    else:
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
     return render(request, 'ver_despesa.html', {'permissao': request.user.last_name,
-    'cadastro': ContasPagar.objects.filter(id=cod)})
+    'cadastro': ContasPagar.objects.filter(id=cod), 'msg': msg})
 
 @login_required
 def deletar_despesa(request, cod):
@@ -248,11 +294,12 @@ def nova_despesa(request, cod):
         long = request.POST.get('long')
         lat = request.POST.get('lat')
         entidade = request.POST.get('entidade')
+        centrodecusto = request.POST.get('centrodecusto')
         #ARQUIVOS
         comprovante_pagamento = request.FILES.get('comprovante_pagamento')
         nota_fatura = request.FILES.get('comprovante_pagamento')
         ContasPagar(usuario_cadastro=usuario_cadastro, valor=valor, nome_vinculo=nome_vinculo, vinculo=vinculo, data=data, obs=obs, descricao=descricao, status=status,
-        comprovante_pagamento=comprovante_pagamento, nota_fatura=nota_fatura, long=long, lat=lat, entidade=entidade).save()
+        comprovante_pagamento=comprovante_pagamento, nota_fatura=nota_fatura, long=long, lat=lat, entidade=entidade, centrodecusto=centrodecusto).save()
         msg = 'Salvo!'
         localizar_ip = LocationService()
         resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
