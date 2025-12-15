@@ -13,6 +13,59 @@ from django.http import JsonResponse
 from django.db.models import Q
 from .ip_to_endereco import *
 
+##################################
+##       CONTAS A RECEBER       ##
+##################################
+
+@login_required
+def deletar_conta_receber(request, cod):
+    ContasReceber.objects.filter(id=cod).update(status='Apagado em ' + str(datetime.now()) + ' pelo user: ' + str(request.user.username))
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return redirect(consulta_contas_receber)
+
+@login_required
+def consulta_contas_receber(request):
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'consulta_contas_receber.html', {'permissao': request.user.last_name, 'contas': ContasReceber.objects.filter(status='').order_by('-id')})
+
+@login_required
+def nova_conta_receber(request):
+    msg = ''
+    if request.method == 'POST':
+        entidade = request.POST.get('entidade').split('-')[0]
+        nome_entidade = request.POST.get('entidade').split('-')[1]
+        data = request.POST.get('data')
+        valor = request.POST.get('valor')
+        contrato = request.POST.get('contrato')
+        nota_fiscal = request.FILES.get('nota_fiscal')
+        status = ''
+
+        ContasReceber(entidade=entidade, nome_entidade=nome_entidade, data=data, valor=valor, contrato=contrato, nota_fiscal=nota_fiscal, status=status).save()
+
+        for c in ContratoReceita.objects.filter(id=contrato):
+            valor_atual = c.valor_atual_recebido
+            try:
+                valor_novo = valor_atual - float(valor.replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace(',', '.'))
+            except:
+                valor_novo = float(valor.replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace(',', '.'))
+            c.valor_atual_recebido = valor_novo
+            c.save()
+
+        msg = 'Salvo!'
+
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post=request.POST.items(), dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    else:
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'nova_conta_receber.html', {'permissao': request.user.last_name, 'msg': msg, 'entidades': Entidade.objects.filter(status=''), 'contratos': ContratoReceita.objects.filter(status='')})
+
 ###########################
 ##       CONTRATOS       ##
 ###########################

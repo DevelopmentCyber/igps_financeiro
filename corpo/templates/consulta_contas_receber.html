@@ -1,0 +1,100 @@
+{% extends 'painel.html' %}
+{% load humanize %}
+
+{% block link %}
+<h1>Contas a Receber</h1>
+<nav>
+  <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+          <a href="https://igps.net.br/painel/">Página inicial</a>
+      </li>
+      <li class="breadcrumb-item">Painel de controle</li>
+      <li class="breadcrumb-item">Financeiro</li>
+      <li class="breadcrumb-item active">Contas a Receber</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+    <div class="card-body">
+
+      <table class="table table-borderless datatable">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Entidade</th>
+            <th scope="col">Nota Fiscal</th>
+            <th scope="col">Data</th>
+            <th scope="col">Valor</th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for c in contas %}
+          <tr>
+
+            <!-- ID -->
+            <th scope="row">
+              <a href="/editar_conta_receber/{{ c.id }}/">
+                {{ c.id }}
+              </a>
+            </th>
+
+            <!-- ENTIDADE -->
+            <td>
+              {{ c.nome_entidade }}
+            </td>
+
+            <!-- NOTA FISCAL -->
+            <td>
+              {% if c.nota_fiscal %}
+                <a href="{{ c.nota_fiscal.url }}" target="_blank" class="badge bg-info">
+                  Ver PDF
+                </a>
+              {% else %}
+                <span class="badge bg-light text-dark">—</span>
+              {% endif %}
+            </td>
+
+            <!-- DATA -->
+            <td>
+              {{ c.data|slice:"8:10" }}/{{ c.data|slice:"5:7" }}/{{ c.data|slice:"0:4" }}
+            </td>
+
+            <!-- VALOR -->
+            <td>
+              R$ {{ c.valor }}
+            </td>
+
+            <!-- CONTRATO -->
+            <td>
+              {% if c.contrato %}
+                <a href="/editar_contrato/{{ c.contrato }}/">Ver contrato</a>
+              {% else %}
+                Sem contrato
+              {% endif %}
+            </td>
+
+            <!-- AÇÕES -->
+            <td>
+              <a href="/deletar_conta_receber/{{ c.id }}/" class="badge bg-danger">
+                Apagar
+              </a>
+            </td>
+
+          </tr>
+          {% endfor %}
+        </tbody>
+
+      </table>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

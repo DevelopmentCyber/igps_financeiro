@@ -1,0 +1,124 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+      <h1>Financeiro – Novo Valor a Receber</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+          <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Painel de controle</a></li>
+          <li class="breadcrumb-item"><a href="#">Financeiro</a></li>
+          <li class="breadcrumb-item active">Novo valor a receber</li>
+        </ol>
+      </nav>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    select, textarea, label, input {
+        padding: 10px;
+        width: 90%
+    }
+    form {
+        width: 100%;
+    }
+</style>
+                                
+<form method="POST" enctype="multipart/form-data">{% csrf_token %}
+
+    <!-- ENTIDADE / NOTA FISCAL -->
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Entidade: <br>
+            <select name="entidade" required>
+                <option value="" disabled>Selecione</option>
+                {% for e in entidades %}
+                <option value="{{ e.id }}-{{ e.razao_social }}">{{ e.razao_social }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Data: <br>
+            <input type="date" name="data" required>
+            <br><br>
+        </div>
+
+         <!-- DATA / VALOR -->
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Contrato: <br>
+            <select name="contrato" id="">
+                {% for c in contratos %}
+                <option value="{{ c.id }}">{{ c.nome_vinculo }} - De {{ c.data_inicio|slice:"8:10" }}/{{ c.data_inicio|slice:"5:7" }}/{{ c.data_inicio|slice:"0:4" }} à {{ c.data_fim|slice:"8:10" }}/{{ c.data_fim|slice:"5:7" }}/{{ c.data_fim|slice:"0:4" }}</option>
+                {% endfor %}
+            </select>
+            <br><br>
+        </div>
+
+        <div style="float: left; width: 50%;">
+            Valor: <br>
+            <input type="text" name="valor" id="valor" placeholder="R$ 0,00" required>
+            <br><br>
+        </div>
+    </div>
+        <!-- NOTA FISCAL (UPLOAD PDF) -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:100%;">
+        <label>Nota Fiscal (PDF)</label><br>
+
+        <input style="display:none"
+               type="file"
+               name="nota_fiscal"
+               id="arquivo_nota_fiscal"
+               accept=".pdf"
+               required>
+
+        <label for="arquivo_nota_fiscal"
+               id="campo-nota-fiscal"
+               style="
+               border:1px dashed black;
+               background:#fff;
+               width:80%;
+               height:280px;
+               text-align:center;
+               display:block;
+               cursor:pointer;
+               padding-top:40px;
+               ">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width:80px;">
+                <path d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm64 236c0 6.6-5.4 12-12 12H108c-6.6 0-12-5.4-12-12v-24c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12v24zm0-96c0 6.6-5.4 12-12 12H108c-6.6 0-12-5.4-12-12v-24c0-6.6 5.4-12 12-12h168c6.6 0 12 5.4 12 12v24z"/>
+            </svg>
+            <p>Clique para anexar a Nota Fiscal (PDF)</p>
+        </label>
+
+        <script>
+            document.getElementById("arquivo_nota_fiscal").addEventListener("change", function () {
+                const nome = this.files[0]?.name || '';
+                document.getElementById("campo-nota-fiscal").innerHTML =
+                    "<p><b>Arquivo selecionado:</b><br>" + nome + "</p>";
+            });
+        </script>
+
+        <br><br>
+    </div>
+</div>
+
+
+    <br><br>
+
+    <button style="padding: 10px; border-radius: 10px;" id="botao">
+        <i class="fas fa-save"></i> Salvar
+    </button>
+
+    <br><br>       
+
+</form>
+
+<script>
+    if (!("{{ msg }}" == "")) {
+        alert("{{ msg }}");
+    }
+</script>
+
+{% endblock %}

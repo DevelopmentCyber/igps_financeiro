@@ -1,6 +1,15 @@
 from django.db import models
 
 # Create your models here.
+class ContasReceber(models.Model):
+    entidade = models.CharField(max_length=200)
+    nome_entidade = models.CharField(max_length=200)
+    nota_fiscal = models.FileField(null=True)
+    data = models.CharField(max_length=200)
+    valor = models.CharField(max_length=200)
+    contrato = models.CharField(max_length=200)
+    status = models.CharField(max_length=200)
+
 class ContratoReceita(models.Model):
     vinculo = models.CharField(max_length=200)
     nome_vinculo = models.CharField(max_length=200)
@@ -9,6 +18,7 @@ class ContratoReceita(models.Model):
     contrato = models.FileField(null=True)
     valor = models.CharField(max_length=200)
     valor_atual_gasto = models.CharField(max_length=200)
+    valor_atual_recebido = models.CharField(max_length=200, null=True)
     status = models.CharField(max_length=200)
 
 class CentroCusto(models.Model):

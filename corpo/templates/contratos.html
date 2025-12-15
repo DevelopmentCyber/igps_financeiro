@@ -28,7 +28,8 @@
             <th scope="col">Início</th>
             <th scope="col">Fim</th>
             <th scope="col">Valor</th>
-            <th scope="col">Valor atual já gasto</th>
+            <th scope="col">Valor atual gasto</th>
+            <th scope="col">Valor atual recebido</th>
             <th scope="col">Status</th>
             <th scope="col">Contrato</th>
             <th scope="col"></th>
@@ -53,6 +54,9 @@
             <td>{{ c.valor }}</td>
             <td>
                 <a href="/despesas_contrato/{{ c.id }}/">R$ {{ c.valor_atual_gasto|floatformat:2|intcomma }}</a>
+            </td>
+            <td>
+                R$ {{ c.valor_atual_recebido|floatformat:2|intcomma }}
             </td>
             
             <td>
