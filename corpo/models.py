@@ -1,6 +1,16 @@
 from django.db import models
 
 # Create your models here.
+class ContratoReceita(models.Model):
+    vinculo = models.CharField(max_length=200)
+    nome_vinculo = models.CharField(max_length=200)
+    data_inicio = models.CharField(max_length=100)
+    data_fim = models.CharField(max_length=100)
+    contrato = models.FileField(null=True)
+    valor = models.CharField(max_length=200)
+    valor_atual_gasto = models.CharField(max_length=200)
+    status = models.CharField(max_length=200)
+
 class CentroCusto(models.Model):
     nome = models.CharField(max_length=200)
     status = models.CharField(max_length=200)
@@ -34,6 +44,7 @@ class PreCadastroContasPagar(models.Model):
     lat = models.CharField(max_length=200)
     entidade = models.CharField(max_length=200)
     centrodecusto = models.CharField(max_length=200, null=True)
+    contrato = models.CharField(max_length=200, null=True)
     #ARQUIVOS
     comprovante_pagamento = models.FileField(null=True)
     nota_fatura = models.FileField(null=True)#Nota fiscal, Fatura, Contracheque
@@ -51,6 +62,7 @@ class ContasPagar(models.Model):
     lat = models.CharField(max_length=200)
     entidade = models.CharField(max_length=200)
     centrodecusto = models.CharField(max_length=200, null=True)
+    contrato = models.CharField(max_length=200, null=True)
     #ARQUIVOS
     comprovante_pagamento = models.FileField(null=True)
     nota_fatura = models.FileField(null=True)#Nota fiscal, Fatura, Contracheque

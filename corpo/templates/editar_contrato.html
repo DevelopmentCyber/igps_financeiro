@@ -1,0 +1,133 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+<h1>Financeiro – Editar Contrato</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/painel/">Página inicial</a></li>
+        <li class="breadcrumb-item"><a href="/painel/">Painel de controle</a></li>
+        <li class="breadcrumb-item"><a href="#">Financeiro</a></li>
+        <li class="breadcrumb-item active">Editar Contrato</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    input, select, textarea {
+        padding: 10px;
+        width: 95%;
+    }
+    label {
+        font-weight: bold;
+    }
+</style>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+{% for c in contrato %}
+
+<!-- VÍNCULO -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:100%;">
+        <label>Vínculo</label><br>
+        <select name="vinculo" id="">
+            {% for e in entidades %}
+            <option value="{{ e.id }}={{ e.razao_social }}" {% if e.id == c.vinculo_id %}selected{% endif %}>{{ e.razao_social }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+    </div>
+</div>
+
+<!-- DATAS -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:50%;">
+        <label>Data de início</label><br>
+        <input type="date" name="data_inicio" required value="{{ c.data_inicio }}">
+        <br><br>
+    </div>
+    <div style="float:left; width:50%;">
+        <label>Data de fim</label><br>
+        <input type="date" name="data_fim" value="{{ c.data_fim }}">
+        <br><br>
+    </div>
+</div>
+
+<!-- VALOR E STATUS -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:50%;">
+        <label>Valor do contrato</label><br>
+        <input type="text" name="valor" placeholder="R$ 0,00" required value="{{ c.valor }}">
+        <br><br>
+    </div>
+    <div style="float:left; width:50%;">
+        <label>Status</label><br>
+        <select name="status" required>
+            <option value="Ativo" {% if c.status == "Ativo" %}selected{% endif %}>Ativo</option>
+            <option value="Suspenso" {% if c.status == "Suspenso" %}selected{% endif %}>Suspenso</option>
+            <option value="Encerrado" {% if c.status == "Encerrado" %}selected{% endif %}>Encerrado</option>
+        </select>
+        <br><br>
+    </div>
+</div>
+
+<!-- CONTRATO (UPLOAD) -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:100%;">
+        <label>Contrato (PDF ou imagem)</label><br>
+
+        <input style="display:none" type="file" name="contrato" id="arquivo_contrato" accept=".pdf,.jpg,.jpeg,.png">
+
+        <label for="arquivo_contrato"
+               id="campo-contrato"
+               style="
+               border:1px dashed black;
+               background:#fff;
+               width:80%;
+               height:280px;
+               text-align:center;
+               display:block;
+               cursor:pointer;
+               padding-top:40px;
+               ">
+            {% if c.contrato %}
+            <p>Arquivo atual: <a href="{{ c.contrato }}" target="_blank">{{ c.contrato }}</a></p>
+            <p>Clique para anexar um novo contrato</p>
+            {% else %}
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:80px;">
+                <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32v242.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32z"/>
+            </svg>
+            <p>Clique para anexar um novo contrato</p>
+            {% endif %}
+        </label>
+
+        <script>
+            document.getElementById("arquivo_contrato").addEventListener("change", function () {
+                const nome = this.files[0]?.name || '';
+                document.getElementById("campo-contrato").innerHTML =
+                    "<p><b>Arquivo selecionado:</b><br>" + nome + "</p>";
+            });
+        </script>
+
+        <br><br>
+    </div>
+</div>
+{% endfor %}
+<!-- BOTÃO -->
+<div style="float:left; width:100%;">
+    <button style="
+        padding:12px;
+        border-radius:5px;
+        border:1px solid black;
+        background:greenyellow;
+        font-weight:bold;
+    ">
+        Atualizar Contrato
+    </button>
+</div>
+
+</form>
+
+{% endblock %}

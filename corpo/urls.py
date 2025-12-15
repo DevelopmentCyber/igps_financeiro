@@ -6,6 +6,12 @@ from . import views
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
+    #Contratos
+    url(r'despesas_contrato/(?P<cod>[0-9]+)/', views.despesas_contrato, name="despesas_contrato"),
+    url(r'editar_contrato/(?P<cod>[0-9]+)/', views.editar_contrato, name="editar_contrato"),
+    url(r'deletar_contrato/(?P<cod>[0-9]+)/', views.deletar_contrato, name="deletar_contrato"),
+    url(r'contratos/', views.contratos, name="contratos"),
+    url(r'novo_contrato/', views.novo_contrato, name="novo_contrato"),
     #Centro de custo
     url(r'relatorio_despesas_centro_custo/(?P<cod>[0-9]+)/', views.relatorio_despesas_centro_custo, name="relatorio_despesas_centro_custo"),
     url(r'despesas_centrocusto/(?P<cod>[0-9]+)/', views.despesas_centrocusto, name="despesas_centrocusto"),

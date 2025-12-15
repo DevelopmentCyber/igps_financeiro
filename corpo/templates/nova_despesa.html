@@ -360,11 +360,22 @@
     </div>
 
     <div style="float: left; width: 100%">
-        <div style="float: left; width: 100%;">
+        <div style="float: left; width: 50%;">
             Obs: <br>
             <textarea name="obs">{{ p.obs }}</textarea>
             <br><br>
         </div>
+        <div style="float: left; width: 50%;">
+            Contrato: <br>
+            <select name="contrato">
+                {% for c in contratos %}
+                <option value="" {% if "" == p.contrato %} select {% endif %}>Despesa não vinculada</option>
+                <option value="{{ c.id }}" {% if c.id == p.contrato %} select {% endif %} >
+                    {{ c.nome_vinculo }} - De {{ c.data_inicio|slice:"8:10" }}/{{ c.data_inicio|slice:"5:7" }}/{{ c.data_inicio|slice:"0:4" }} à {{ c.data_fim|slice:"8:10" }}/{{ c.data_fim|slice:"5:7" }}/{{ c.data_fim|slice:"0:4" }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>        
     </div>
     {% endfor %}
     <div style="float: left; width: 100%">

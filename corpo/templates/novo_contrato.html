@@ -1,0 +1,128 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+<h1>Financeiro – Novo Contrato</h1>
+<nav>
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/painel/">Página inicial</a></li>
+        <li class="breadcrumb-item"><a href="/painel/">Painel de controle</a></li>
+        <li class="breadcrumb-item"><a href="#">Financeiro</a></li>
+        <li class="breadcrumb-item active">Novo Contrato</li>
+    </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<style>
+    input, select, textarea {
+        padding: 10px;
+        width: 95%;
+    }
+    label {
+        font-weight: bold;
+    }
+</style>
+
+<form method="POST" enctype="multipart/form-data">
+{% csrf_token %}
+
+<!-- VÍNCULO -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:100%;">
+        <label>Vínculo</label><br>
+        <select name="vinculo" id="">
+            {% for e in entidades %}
+            <option value="{{ e.id }}={{ e.razao_social }}">{{ e.razao_social }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+    </div>
+</div>
+
+<!-- DATAS -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:50%;">
+        <label>Data de início</label><br>
+        <input type="date" name="data_inicio" required>
+        <br><br>
+    </div>
+    <div style="float:left; width:50%;">
+        <label>Data de fim</label><br>
+        <input type="date" name="data_fim">
+        <br><br>
+    </div>
+</div>
+
+<!-- VALOR E STATUS -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:50%;">
+        <label>Valor do contrato</label><br>
+        <input type="text" name="valor" placeholder="R$ 0,00" required>
+        <br><br>
+    </div>
+    <div style="float:left; width:50%;">
+        <label>Status</label><br>
+        <select name="status" required>
+            <option value="" disabled>Selecione</option>
+            <option value="">Ativo</option>
+            <option value="Suspenso">Suspenso</option>
+            <option value="Encerrado">Encerrado</option>
+        </select>
+        <br><br>
+    </div>
+</div>
+
+<!-- CONTRATO (UPLOAD) -->
+<div style="float:left; width:100%;">
+    <div style="float:left; width:100%;">
+        <label>Contrato (PDF ou imagem)</label><br>
+
+        <input style="display:none" type="file" name="contrato" id="arquivo_contrato" accept=".pdf,.jpg,.jpeg,.png">
+
+        <label for="arquivo_contrato"
+               id="campo-contrato"
+               style="
+               border:1px dashed black;
+               background:#fff;
+               width:80%;
+               height:280px;
+               text-align:center;
+               display:block;
+               cursor:pointer;
+               padding-top:40px;
+               ">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:80px;">
+                <path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32v242.7l-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7V32z"/>
+            </svg>
+            <p>Clique para anexar o contrato</p>
+        </label>
+
+        <script>
+            document.getElementById("arquivo_contrato").addEventListener("change", function () {
+                const nome = this.files[0]?.name || '';
+                document.getElementById("campo-contrato").innerHTML =
+                    "<p><b>Arquivo selecionado:</b><br>" + nome + "</p>";
+            });
+        </script>
+
+        <br><br>
+    </div>
+</div>
+
+<!-- BOTÃO -->
+<div style="float:left; width:100%;">
+    <button style="
+        padding:12px;
+        border-radius:5px;
+        border:1px solid black;
+        background:greenyellow;
+        font-weight:bold;
+    ">
+        Salvar Contrato
+    </button>
+</div>
+
+</form>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'painel.html' %}
+{% load humanize %}
+{% block link %}
+<h1>Contratos de Receita</h1>
+<nav>
+  <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+          <a href="https://igps.net.br/painel/">Página inicial</a>
+      </li>
+      <li class="breadcrumb-item">Painel de controle</li>
+      <li class="breadcrumb-item">Financeiro</li>
+      <li class="breadcrumb-item active">Contratos de Receita</li>
+  </ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+    <div class="card-body">
+
+      <table class="table table-borderless datatable">
+        <thead>
+          <tr>
+            <th scope="col">ID</th>
+            <th scope="col">Vínculo</th>
+            <th scope="col">Início</th>
+            <th scope="col">Fim</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Valor atual já gasto</th>
+            <th scope="col">Status</th>
+            <th scope="col">Contrato</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for c in contratos %}
+          <tr>
+            <th scope="row">
+              <a href="/editar_contrato_receita/{{ c.id }}/">{{ c.id }}</a>
+            </th>
+
+            <td>
+              <a href="/editar_contrato/{{ c.id }}/">
+                {{ c.nome_vinculo }}
+              </a>
+            </td>
+
+            <td>{{ c.data_inicio }}</td>
+            <td>{{ c.data_fim }}</td>
+            <td>{{ c.valor }}</td>
+            <td>
+                <a href="/despesas_contrato/{{ c.id }}/">R$ {{ c.valor_atual_gasto|floatformat:2|intcomma }}</a>
+            </td>
+            
+            <td>
+              {% if c.status == "" %}
+                <span class="badge bg-success">Ativo</span>
+              {% elif c.status == "Suspenso" %}
+                <span class="badge bg-secondary">Suspenso</span>
+                {% elif c.status == "Encerrado" %}
+                <span class="badge bg-warning text-dark">Encerrado</span>
+              {% endif %}
+            </td>
+
+            <td>
+              {% if c.contrato %}
+                <a href="{{ c.contrato.url }}" target="_blank" class="badge bg-info">
+                  Ver arquivo
+                </a>
+              {% else %}
+                <span class="badge bg-light text-dark">—</span>
+              {% endif %}
+            </td>
+
+            <td>
+              <a href="/deletar_contrato/{{ c.id }}/" class="badge bg-danger">
+                Apagar
+              </a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+
+      </table>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}
