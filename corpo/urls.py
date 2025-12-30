@@ -6,6 +6,14 @@ from . import views
 from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
+    #Contas bancárias
+    url(r'contas_bancarias/', views.contas_bancarias, name="contas_bancarias"),
+    url(r'nova_conta_bancaria/', views.nova_conta_bancaria, name="nova_conta_bancaria"),
+    url(r'deletar_conta_bancaria/(?P<cod>[0-9]+)/', views.deletar_conta_bancaria, name="deletar_conta_bancaria"),
+    #Fornecedor PF
+    url(r'novo_fornecedor_pf/', views.novo_fornecedor_pf, name="novo_fornecedor_pf"),
+    url(r'editar_fornecedor_pf/(?P<cod>[0-9]+)/', views.editar_fornecedor_pf, name="editar_fornecedor_pf"),
+    url(r'deletar_fornecedor_pf/(?P<cod>[0-9]+)/', views.deletar_fornecedor_pf, name="deletar_fornecedor_pf"),
     #Contas a receber
     url(r'deletar_conta_receber/(?P<cod>[0-9]+)/', views.deletar_conta_receber, name="deletar_conta_receber"),
     url(r'consulta_contas_receber/', views.consulta_contas_receber, name="consulta_contas_receber"),
@@ -29,7 +37,9 @@ urlpatterns = [
     url(r'fornecedores/', views.fornecedores, name="fornecedores"),
     url(r'consulta_cnpj/', csrf_exempt(views.consulta_cnpj), name="consulta_cnpj"),
     url(r'novo_fornecedor/', views.novo_fornecedor, name="novo_fornecedor"),
-    #Despesas
+    #Despesas 
+    url(r'despesas_autorizadas/', views.despesas_autorizadas, name="despesas_autorizadas"),
+    url(r'autorizar_conta/(?P<cod>[0-9]+)/', views.autorizar_conta, name="autorizar_conta"),
     url(r'relatorio_despesas/', views.relatorio_despesas, name="relatorio_despesas"),
     url(r'ver_despesa/(?P<cod>[0-9]+)/', views.ver_despesa, name="ver_despesa"),
     url(r'deletar_despesa/(?P<cod>[0-9]+)/', views.deletar_despesa, name="deletar_despesa"),

@@ -21,7 +21,6 @@
       <table class="table table-borderless datatable">
         <thead>
           <tr>
-            <th scope="col">ID</th>
             <th scope="col">Razão Social</th>
             <th scope="col">CNPJ</th>
             <th scope="col">Local</th>
@@ -33,12 +32,20 @@
         <tbody>
           {% for f in fornecedores %}
           <tr>
-            <th scope="row"><a href="/editar_fornecedor/{{ f.id }}/">{{ f.id }}</a></th>
             <td><a href="/editar_fornecedor/{{ f.id }}/">{{ f.razao_social }}</a></td>
             <td>{{ f.cnpj }}</td>
             <td>{{ f.cidade }} - {{ f.uf }}</td>
             <td>{{ f.telefone }}</td>
             <td><a href="/deletar_fornecedor/{{ f.id }}/" class="badge bg-danger">Apagar</a></td>
+          </tr>
+          {% endfor %}
+          {% for f in fornecedores_pf %}
+          <tr>
+            <td><a href="/editar_fornecedor_pf/{{ f.id }}/">{{ f.nome_completo }}</a></td>
+            <td>{{ f.cpf }}</td>
+            <td>{{ f.cidade }} - {{ f.uf }}</td>
+            <td>{{ f.telefone }}</td>
+            <td><a href="/deletar_fornecedor_pf/{{ f.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
           {% endfor %}
         </tbody>

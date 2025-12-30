@@ -62,6 +62,24 @@
             <br><br>
         </div>
     </div>
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Centro de custo: <br>
+            <select name="centro_custo" id="">
+                {% for c in centros %}
+                    <option value="{{ c.id }}">{{ c.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="float: left; width: 50%;">
+            Conta bancária: <br>
+            <select name="conta_bancaria" id="">
+                {% for c in contas %}
+                <option value="{{ c.id }}">{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
         <!-- NOTA FISCAL (UPLOAD PDF) -->
 <div style="float:left; width:100%;">
     <div style="float:left; width:100%;">

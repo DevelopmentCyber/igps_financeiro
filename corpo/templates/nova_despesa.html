@@ -369,13 +369,30 @@
             Contrato: <br>
             <select name="contrato">
                 {% for c in contratos %}
-                <option value="" {% if "" == p.contrato %} select {% endif %}>Despesa não vinculada</option>
-                <option value="{{ c.id }}" {% if c.id == p.contrato %} select {% endif %} >
+                <option value="" {% if "" == p.contrato %} selected {% endif %}>Despesa não vinculada</option>
+                <option value="{{ c.id }}" {% if c.id == p.contrato %} selected {% endif %} >
                     {{ c.nome_vinculo }} - De {{ c.data_inicio|slice:"8:10" }}/{{ c.data_inicio|slice:"5:7" }}/{{ c.data_inicio|slice:"0:4" }} à {{ c.data_fim|slice:"8:10" }}/{{ c.data_fim|slice:"5:7" }}/{{ c.data_fim|slice:"0:4" }}
                 </option>
                 {% endfor %}
             </select>
         </div>        
+    </div>
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+        Fonte: <br>
+        <select name="fonte" id="fonte">
+            <option value="Pública">Pública</option>
+            <option value="Privada" {% if "Privada" == p.fonte %} selected {% endif %}>Privada</option>
+        </select>
+        </div>
+        <div style="float: left; width: 50%;">
+            Conta bancária: <br>
+            <select name="conta_bancaria" id="conta_bancaria">
+                {% for c in contas %}
+                <option value="{{ c.id }}" {% if c.id == p.conta_bancaria %} selected {% endif %}>{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
     {% endfor %}
     <div style="float: left; width: 100%">

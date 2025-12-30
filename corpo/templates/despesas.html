@@ -23,6 +23,7 @@
       <table class="table table-borderless datatable">
         <thead>
           <tr>
+            <th></th>
             <th scope="col">ID</th>
             <th scope="col">Descrição</th>
             <th scope="col">Valor</th>
@@ -37,6 +38,23 @@
           {% for d in despesas %}
           {% if d.comprovante_pagamento == '' or d.comprovante_pagamento == None or d.nota_fatura == '' or d.nota_fatura == None %}
           <tr title="Documento ausente">
+            {% if d.autorizacao == '' or d.autorizacao == None %}
+              <th style="background-color: #808080; text-align: center;"><a href="javascript:void(0)"
+                id="btn-pagar-{{ d.id }}"
+                onclick="autorizarConta({{ d.id }})"
+                style="background-color: green; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">
+                Pagar
+            </a>
+            
+            <span id="status-{{ d.id }}" style="display:none; color:white; font-weight:bold;">
+              ✔ Autorizado
+            </span>
+           </th>
+           {% else %}
+           <th style="background-color: #808080; text-align: center;"><span id="status-{{ d.id }}" style="color:white; font-weight:bold;">
+            ✔ Autorizado
+          </span></th>
+           {% endif %}
             <th style="background-color: #808080;" scope="row"><a style="color: white" href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
             <td style="background-color: #808080;"><a style="color: white" href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
             <td style="background-color: #808080; color: white">{{ d.valor }}</td>
@@ -50,9 +68,10 @@
           </tr>
           {% else %}
           <tr>
+            <th></th>
             <th scope="row"><a href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
             <td><a href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
-            <td>{{ d.data }}</td>
+            <td>{{ d.valor }}</td>
             <td>{{ d.data }}</td>
             <td>{{ d.entidade }}</td>
             <td>{{ d.nome_vinculo }}</td>
@@ -78,5 +97,32 @@
 
   </div>
 </div>
-
+<script>
+  function autorizarConta(id) {
+      fetch(`/autorizar_conta/${id}/`, {
+          method: 'GET', // ou POST, se preferir
+          headers: {
+              'X-Requested-With': 'XMLHttpRequest'
+          }
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error('Erro ao autorizar');
+          }
+          return response.text();
+      })
+      .then(() => {
+          // Esconde o botão
+          document.getElementById(`btn-pagar-${id}`).style.display = 'none';
+  
+          // Mostra o aviso
+          document.getElementById(`status-${id}`).style.display = 'inline';
+      })
+      .catch(error => {
+          alert('Não foi possível autorizar a despesa.');
+          console.error(error);
+      });
+  }
+  </script>
+  
 {% endblock %}

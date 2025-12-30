@@ -1,0 +1,50 @@
+{% extends 'painel.html' %}
+
+{% block link %}
+<h1>Contas bancárias</h1>
+<nav>
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
+    <li class="breadcrumb-item">Painel de controle</li>
+    <li class="breadcrumb-item">Financeiro</li>
+    <li class="breadcrumb-item active">Contas bancárias</li>
+</ol>
+</nav>
+{% endblock %}
+
+{% block content %}
+
+<div class="col-12">
+  <div class="card recent-sales overflow-auto">
+    <div class="card-body">
+
+      <table class="table table-borderless datatable">
+        <thead>
+          <tr>
+            <th scope="col">Apelido</th>
+            <th scope="col">Agência</th>
+            <th scope="col">Conta</th>
+            <th scope="col">Banco</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in contas %}
+          <tr>
+            <td>{{ c.apelido }}</td>
+            <td>{{ c.agencia }}</td>
+            <td>{{ c.conta }}</td>
+            <td>{{ c.banco }}</td>
+            <td><a href="/deletar_conta_bancaria/{{ c.id }}/" class="badge bg-danger">Apagar</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        
+      </table>
+
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

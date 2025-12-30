@@ -123,6 +123,7 @@
         <div style="float: left; width: 50%;">
             Centro de custo: <br>
             <select name="centrodecusto" id="">
+                <option value="">Não vincular</option>
                 {% for c in centrosdecusto %}
                 <option name="{{ c.id }}">{{ c.nome }}</option>
                 {% endfor %}
@@ -134,7 +135,6 @@
         <div style="float: left; width: 50%;">
             Obs: <br>
             <textarea name="obs">{{ p.obs }}</textarea>
-            <br><br>
         </div>
         <div style="float: left; width: 50%;">
             Contrato: <br>
@@ -147,6 +147,24 @@
                 {% endfor %}
             </select>
         </div>        
+    </div>
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Fonte: <br>
+            <select name="fonte" id="">
+                <option value="Pública">Pública</option>
+                <option value="Privada">Privada</option>
+            </select><br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Conta bancária: <br>
+            <select name="conta_bancaria" id="">
+                {% for c in contas %}
+                    <option value="{{ c.id }}">{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
+                {% endfor %}
+                <option value=""></option>
+            </select>
+        </div>
     </div>
 
     <div style="display: none;">

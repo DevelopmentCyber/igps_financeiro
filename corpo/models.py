@@ -1,6 +1,13 @@
 from django.db import models
 
 # Create your models here.
+class ContaBancaria(models.Model):
+    agencia = models.CharField(max_length=200)
+    conta = models.CharField(max_length=200)
+    banco = models.CharField(max_length=200)
+    apelido = models.CharField(max_length=200)
+    status = models.CharField(max_length=200)
+
 class ContasReceber(models.Model):
     entidade = models.CharField(max_length=200)
     nome_entidade = models.CharField(max_length=200)
@@ -8,6 +15,8 @@ class ContasReceber(models.Model):
     data = models.CharField(max_length=200)
     valor = models.CharField(max_length=200)
     contrato = models.CharField(max_length=200)
+    centro_custo = models.CharField(max_length=200, null=True)
+    conta_bancaria = models.CharField(max_length=200, null=True)
     status = models.CharField(max_length=200)
 
 class ContratoReceita(models.Model):
@@ -23,6 +32,23 @@ class ContratoReceita(models.Model):
 
 class CentroCusto(models.Model):
     nome = models.CharField(max_length=200)
+    status = models.CharField(max_length=200)
+
+class FornecedorPF(models.Model):
+    nome_completo = models.CharField(max_length=200)
+    cpf = models.CharField(max_length=200)
+    cep = models.CharField(max_length=200)
+    rua = models.CharField(max_length=200)
+    n = models.CharField(max_length=200)
+    bairro = models.CharField(max_length=200)
+    cidade = models.CharField(max_length=200)
+    uf = models.CharField(max_length=200)
+    telefone = models.CharField(max_length=200)
+    email = models.CharField(max_length=200)
+    n_contrato = models.CharField(max_length=200)
+    servico_prestado = models.CharField(max_length=200)
+    rg = models.FileField(null=True)
+    comprovante_residencia = models.FileField(null=True)
     status = models.CharField(max_length=200)
 
 class Fornecedor(models.Model):
@@ -55,6 +81,8 @@ class PreCadastroContasPagar(models.Model):
     entidade = models.CharField(max_length=200)
     centrodecusto = models.CharField(max_length=200, null=True)
     contrato = models.CharField(max_length=200, null=True)
+    fonte = models.CharField(max_length=200, null=True)
+    conta_bancaria = models.CharField(max_length=200, null=True)
     #ARQUIVOS
     comprovante_pagamento = models.FileField(null=True)
     nota_fatura = models.FileField(null=True)#Nota fiscal, Fatura, Contracheque
@@ -73,6 +101,9 @@ class ContasPagar(models.Model):
     entidade = models.CharField(max_length=200)
     centrodecusto = models.CharField(max_length=200, null=True)
     contrato = models.CharField(max_length=200, null=True)
+    fonte = models.CharField(max_length=200, null=True)
+    conta_bancaria = models.CharField(max_length=200, null=True)
+    autorizacao = models.CharField(max_length=200, null=True)
     #ARQUIVOS
     comprovante_pagamento = models.FileField(null=True)
     nota_fatura = models.FileField(null=True)#Nota fiscal, Fatura, Contracheque

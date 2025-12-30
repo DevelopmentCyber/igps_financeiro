@@ -12,6 +12,48 @@ import json
 from django.http import JsonResponse
 from django.db.models import Q
 from .ip_to_endereco import *
+from django.http import HttpResponse
+
+##################################
+##       CONTAS BANCÁRIAS       ##
+##################################
+
+@login_required
+def deletar_conta_bancaria(request, cod):
+    ContaBancaria.objects.filter(id=cod).update(status='Apagado em ' + str(datetime.now()) + ' pelo user: ' + str(request.user.username))
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return redirect(contas_bancarias)
+
+@login_required
+def contas_bancarias(request):
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'contas_bancarias.html', {'permissao': request.user.last_name, 'contas': ContaBancaria.objects.filter(status='').order_by('-id')})
+
+@login_required
+def nova_conta_bancaria(request):
+    msg = ''
+    if request.method == 'POST':
+        agencia = request.POST.get('agencia')
+        conta = request.POST.get('conta')
+        banco = request.POST.get('banco')
+        apelido = request.POST.get('apelido')
+        status = ''
+
+        ContaBancaria(agencia=agencia, conta=conta, banco=banco, apelido=apelido, status=status).save()
+
+        msg = 'Salvo!'
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post=request.POST.items(), dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    else:
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'nova_conta_bancaria.html', {'permissao': request.user.last_name, 'msg': msg})
 
 ##################################
 ##       CONTAS A RECEBER       ##
@@ -41,10 +83,12 @@ def nova_conta_receber(request):
         data = request.POST.get('data')
         valor = request.POST.get('valor')
         contrato = request.POST.get('contrato')
+        centro_custo = request.POST.get('centro_custo')
+        conta_bancaria = request.POST.get('conta_bancaria')
         nota_fiscal = request.FILES.get('nota_fiscal')
         status = ''
 
-        ContasReceber(entidade=entidade, nome_entidade=nome_entidade, data=data, valor=valor, contrato=contrato, nota_fiscal=nota_fiscal, status=status).save()
+        ContasReceber(entidade=entidade, conta_bancaria=conta_bancaria, centro_custo=centro_custo, nome_entidade=nome_entidade, data=data, valor=valor, contrato=contrato, nota_fiscal=nota_fiscal, status=status).save()
 
         for c in ContratoReceita.objects.filter(id=contrato):
             valor_atual = c.valor_atual_recebido
@@ -64,7 +108,8 @@ def nova_conta_receber(request):
         localizar_ip = LocationService()
         resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
         Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
-    return render(request, 'nova_conta_receber.html', {'permissao': request.user.last_name, 'msg': msg, 'entidades': Entidade.objects.filter(status=''), 'contratos': ContratoReceita.objects.filter(status='')})
+    return render(request, 'nova_conta_receber.html', {'permissao': request.user.last_name, 'msg': msg, 'entidades': Entidade.objects.filter(status=''), 'contratos': ContratoReceita.objects.filter(status=''),
+    'centros': CentroCusto.objects.filter(status=''), 'contas': ContaBancaria.objects.filter(status='')})
 
 ###########################
 ##       CONTRATOS       ##
@@ -220,6 +265,95 @@ def novo_centrocusto(request):
         Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
     return render(request, 'novo_centrocusto.html', {'permissao': request.user.last_name, 'msg': msg})
 
+###############################
+##       FORNECEDOR PF       ##
+###############################
+@login_required
+def deletar_fornecedor_pf(request, cod):
+    FornecedorPF.objects.filter(id=cod).update(status='Apagado em ' + str(datetime.now()) + ' pelo user: ' + str(request.user.username))
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return redirect(fornecedores)
+
+@login_required
+def editar_fornecedor_pf(request, cod):
+    msg = ''
+    if request.method == 'POST':
+        nome_completo = request.POST.get('nome_completo')
+        cpf = request.POST.get('cpf')
+        cep = request.POST.get('cep')
+        rua = request.POST.get('rua')
+        n = request.POST.get('n')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        uf = request.POST.get('uf')
+        telefone = request.POST.get('telefone')
+        n_contrato = request.POST.get('n_contrato')
+        email = request.POST.get('email')
+        comprovante_residencia = request.FILES['comprovante_residencia']
+        rg = request.FILES['rg']
+        servico_prestado = request.POST.get('servico_prestado')
+        status = ''
+
+        FornecedorPF.objects.filter(id=cod).update(nome_completo=nome_completo, cpf=cpf, cep=cep, rua=rua, n=n, bairro=bairro, cidade=cidade, uf=uf, telefone=telefone, email=email,
+        servico_prestado=servico_prestado, status=status, n_contrato=n_contrato)
+
+        if comprovante_residencia != None and comprovante_residencia != '':
+            for f in Fornecedor.objects.filter(id=cod):
+                f.comprovante_residencia = comprovante_residencia
+                f.save()
+
+        if rg != None and rg != '':
+            for f in Fornecedor.objects.filter(id=cod):
+                f.rg = rg
+                f.save()
+
+        msg = 'Salvo!'
+
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post=request.POST.items(), dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    else:
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'editar_fornecedor_pf.html', {'permissao': request.user.last_name, 'msg': msg, 'fornecedor': Fornecedor.objects.filter(id=cod)})
+
+@login_required
+def novo_fornecedor_pf(request):
+    msg = ''
+    if request.method == 'POST':
+        nome_completo = request.POST.get('nome_completo')
+        cpf = request.POST.get('cpf')
+        cep = request.POST.get('cep')
+        rua = request.POST.get('rua')
+        n = request.POST.get('n')
+        bairro = request.POST.get('bairro')
+        cidade = request.POST.get('cidade')
+        uf = request.POST.get('uf')
+        n_contrato = request.POST.get('n_contrato')
+        telefone = request.POST.get('telefone')
+        email = request.POST.get('email')
+        comprovante_residencia = request.FILES.get('comprovante_residencia')
+        rg = request.FILES.get('rg')
+        servico_prestado = request.POST.get('servico_prestado')
+        status = ''
+
+        FornecedorPF(nome_completo=nome_completo, cpf=cpf, cep=cep, rua=rua, n=n, bairro=bairro, cidade=cidade, uf=uf, telefone=telefone, email=email, comprovante_residencia=comprovante_residencia,
+        rg=rg, servico_prestado=servico_prestado, status=status, n_contrato=n_contrato).save()
+
+        msg = 'Salvo!'
+
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post=request.POST.items(), dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    else:
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'novo_fornecedor_pf.html', {'permissao': request.user.last_name, 'msg': msg})
+
 ############################
 ##       FORNECEDOR       ##
 ############################
@@ -281,7 +415,8 @@ def fornecedores(request):
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
     Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
-    return render(request, 'fornecedores.html', {'permissao': request.user.last_name, 'fornecedores': Fornecedor.objects.filter(status='').order_by('-id')})
+    return render(request, 'fornecedores.html', {'permissao': request.user.last_name, 'fornecedores': Fornecedor.objects.filter(status='').order_by('-id'),
+    'fornecedores_pf': FornecedorPF.objects.filter(status='').order_by('-id')})
 
 @csrf_exempt
 def consulta_cnpj(request):
@@ -396,9 +531,11 @@ def pre_nova_despesa(request):
         entidade = request.POST.get('entidade')
         centrodecusto = request.POST.get('centrodecusto')
         contrato = request.POST.get('contrato')
+        fonte = request.POST.get('fonte')
+        conta_bancaria = request.POST.get('conta_bancaria')
         status = ''
         contas_pagar = PreCadastroContasPagar(usuario_pre_cadastro=usuario_pre_cadastro, valor=valor, vinculo=vinculo, data=data, obs=obs, descricao=descricao, status=status,
-        lat=lat, long=long, entidade=entidade, centrodecusto=centrodecusto, contrato=contrato)
+        lat=lat, long=long, entidade=entidade, centrodecusto=centrodecusto, contrato=contrato, fonte=fonte, conta_bancaria=conta_bancaria)
         contas_pagar.save()
         cod = contas_pagar.id
         msg = 'Salvo!'
@@ -412,7 +549,22 @@ def pre_nova_despesa(request):
         Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
     return render(request, 'pre_nova_despesa.html', {'permissao': request.user.last_name, 'colaboradores': Colaboradores.objects.filter(status=''), 'msg': msg,
     'entidades': Entidade.objects.filter(status=''), 'fornecedores': Fornecedor.objects.filter(status=''), 'centrosdecusto': CentroCusto.objects.filter(status=''),
-    'contratos': ContratoReceita.objects.filter(status='')})
+    'contratos': ContratoReceita.objects.filter(status=''), 'contas': ContaBancaria.objects.filter(status='')})
+
+@login_required
+def despesas_autorizadas(request):
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'despesas_autorizadas.html', {'permissao': request.user.last_name, 'despesas': ContasPagar.objects.filter(status='', autorizacao='Autorizado').order_by('-id')})
+
+@login_required
+def autorizar_conta(request, cod):
+    ContasPagar.objects.filter(id=cod).update(autorizacao='Autorizado')
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return HttpResponse("OK")
 
 @login_required
 def nova_despesa(request, cod):
@@ -431,11 +583,13 @@ def nova_despesa(request, cod):
         entidade = request.POST.get('entidade')
         centrodecusto = request.POST.get('centrodecusto')
         contrato = request.POST.get('contrato')
+        fonte = request.POST.get('fonte')
+        conta_bancaria = request.POST.get('conta_bancaria')
         #ARQUIVOS
         comprovante_pagamento = request.FILES.get('comprovante_pagamento')
         nota_fatura = request.FILES.get('comprovante_pagamento')
-        ContasPagar(usuario_cadastro=usuario_cadastro, valor=valor, nome_vinculo=nome_vinculo, vinculo=vinculo, data=data, obs=obs, descricao=descricao, status=status,
-        comprovante_pagamento=comprovante_pagamento, nota_fatura=nota_fatura, long=long, lat=lat, entidade=entidade, centrodecusto=centrodecusto, contrato=contrato).save()
+        ContasPagar(usuario_cadastro=usuario_cadastro, valor=valor, nome_vinculo=nome_vinculo, vinculo=vinculo, data=data, obs=obs, descricao=descricao, status=status, conta_bancaria=conta_bancaria,
+        comprovante_pagamento=comprovante_pagamento, fonte=fonte, nota_fatura=nota_fatura, long=long, lat=lat, entidade=entidade, centrodecusto=centrodecusto, contrato=contrato).save()
         for c in ContratoReceita.objects.filter(id=contrato):
             valor_atual = c.valor_atual_gasto
             valor_novo = float(valor.replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace(',', '.')) - float(valor_atual)
@@ -452,7 +606,7 @@ def nova_despesa(request, cod):
         Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
     return render(request, 'nova_despesa.html', {'permissao': request.user.last_name, 'colaboradores': Colaboradores.objects.filter(status=''), 'msg': msg, 
     'precadastro': PreCadastroContasPagar.objects.filter(id=cod), 'entidades': Entidade.objects.filter(status=''), 'fornecedores': Fornecedor.objects.filter(status=''),
-    'centrosdecusto': CentroCusto.objects.filter(status=''), 'contratos': ContratoReceita.objects.filter(status='')})
+    'centrosdecusto': CentroCusto.objects.filter(status=''), 'contratos': ContratoReceita.objects.filter(status=''), 'contas': ContaBancaria.objects.filter(status='')})
 
 #######################
 ##       GERAL       ##
