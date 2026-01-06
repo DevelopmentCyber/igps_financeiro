@@ -16,7 +16,7 @@ SECRET_KEY = 'm^c6=bzhfqcby+khnm#xt&o=^k9pnvc^5tmx-k%&ob@75@lx*('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['financeiro.igps.net.br']
 
 # Application definition
 
