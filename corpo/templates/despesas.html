@@ -36,6 +36,7 @@
         </thead>
         <tbody>
           {% for d in despesas %}
+          {% if 'FINANCEIRO TOTAL' in permissao %}
           {% if d.comprovante_pagamento == '' or d.comprovante_pagamento == None or d.nota_fatura == '' or d.nota_fatura == None %}
           <tr title="Documento ausente">
             {% if d.autorizacao == '' or d.autorizacao == None %}
@@ -54,6 +55,7 @@
            <th style="background-color: #808080; text-align: center;"><span id="status-{{ d.id }}" style="color:white; font-weight:bold;">
             ✔ Autorizado
           </span></th>
+           {% endif %}
            {% endif %}
             <th style="background-color: #808080;" scope="row"><a style="color: white" href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
             <td style="background-color: #808080;"><a style="color: white" href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
