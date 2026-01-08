@@ -66,9 +66,20 @@ WSGI_APPLICATION = 'igps_financeiro.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
+    #'default': {
+    #    'ENGINE': 'django.db.backends.sqlite3',
+    #    'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #}
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ig187790_igps',
+        'USER': 'ig187790_devcyber',
+        'PASSWORD': 'conect244466666147@qwedev',
+        'HOST': '177.85.99.66',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
 
