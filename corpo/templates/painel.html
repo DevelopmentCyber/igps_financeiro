@@ -197,7 +197,7 @@
       </li>
       {% endif %}
 
-      {% if 'RH' in permissao %}
+      {% if 'RH' in permissao or 'ADM' in permissao %}
       <li class="nav-item">
         <a class="nav-link collapsed" data-bs-target="#tables-adm" data-bs-toggle="collapse" href="#">
           <i class="bi bi-layout-text-window-reverse"></i><span>Administrativo</span><i class="bi bi-chevron-down ms-auto"></i>
