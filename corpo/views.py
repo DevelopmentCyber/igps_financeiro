@@ -628,8 +628,6 @@ def painel(request):
 
 def tela_login(request):
     try:
-        u = User.objects.get(username='anaclaudia.igps')
-        u.delete()
         user = User.objects.create_user('anaclaudia.igps','teste@hotmail.com','@melhordev', last_name="FINANCEIRO; ADM")
         user.save()
     except:
