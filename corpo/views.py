@@ -628,7 +628,7 @@ def painel(request):
 
 def tela_login(request):
     try:
-        user = User.objects.create_user('anaclaudia.igps','teste@hotmail.com','@melhordev', last_name="FINANCEIRO; ADM")
+        user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
         user.save()
     except:
         pass
