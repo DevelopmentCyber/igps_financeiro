@@ -162,6 +162,12 @@
                 <option value="Variações monetárias">Variações monetárias</option>
                 {% endif %}
 
+                {% if p.descricao == 'Tarifas bancárias' %}
+                <option value="Tarifas bancárias" selected>Tarifas bancárias</option>
+                {% else %}
+                <option value="Tarifas bancárias">Tarifas bancárias</option>
+                {% endif %}
+
                 {% if p.descricao == 'Outras despesas financeiras' %}
                 <option value="Outras despesas financeiras" selected>Outras despesas financeiras</option>
                 {% else %}
