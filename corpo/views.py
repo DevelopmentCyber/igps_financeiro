@@ -75,6 +75,37 @@ def consulta_contas_receber(request):
     return render(request, 'consulta_contas_receber.html', {'permissao': request.user.last_name, 'contas': ContasReceber.objects.filter(status='').order_by('-id')})
 
 @login_required
+def editar_conta_receber(request, cod):
+    msg = ''
+    conta = ContasReceber.objects.filter(id=cod)
+    if request.method == 'POST':
+        entidade = request.POST.get('entidade').split('-')[0]
+        nome_entidade = request.POST.get('entidade').split('-')[1]
+        data = request.POST.get('data')
+        contrato = request.POST.get('contrato')
+        centro_custo = request.POST.get('centro_custo')
+        conta_bancaria = request.POST.get('conta_bancaria')
+        nota_fiscal = request.FILES.get('nota_fiscal')
+        status = ''
+
+        conta.update(entidade=entidade, conta_bancaria=conta_bancaria, centro_custo=centro_custo, nome_entidade=nome_entidade, data=data, contrato=contrato, status=status)
+
+        if  nota_fiscal != None and nota_fiscal != "":
+            conta.update(nota_fiscal=nota_fiscal)
+
+        msg = 'Salvo!'
+
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user.username, data_hora=datetime.now(), dados_post=request.POST.items(), dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    else:
+        localizar_ip = LocationService()
+        resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+        Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'editar_conta_receber.html', {'permissao': request.user.last_name, 'msg': msg, 'entidades': Entidade.objects.filter(status=''), 'contratos': ContratoReceita.objects.filter(status=''),
+    'centros': CentroCusto.objects.filter(status=''), 'contas': ContaBancaria.objects.filter(status=''), 'conta': conta})
+
+@login_required
 def nova_conta_receber(request):
     msg = ''
     if request.method == 'POST':
