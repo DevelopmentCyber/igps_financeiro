@@ -86,10 +86,10 @@
         <div style="float: left; width: 50%;">
             Conta bancária: <br>
             <select name="conta_bancaria" id="">
+                <script>
+                    alert('{{ ct.conta_bancaria }}')
+                </script>
                 {% for c in contas %}
-                    <script>
-                        alert('{{ c.apelido }}')
-                    </script>
                     {% if ct.conta_bancaria == c.id %}
                     <option value="{{ c.id }}" selected>{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
                     {% else %}
