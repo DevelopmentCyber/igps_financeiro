@@ -115,7 +115,7 @@
         </label>
         <script>
             if (!('{{ ct.nota_fiscal }}' == '')) {
-                document.getElementById('campo-nota').innerHTML = '<iframe src="/media/{{ ct.nota_fiscal }}" id="rg-preview" style="width: 100%; height: 300px" alt=""></iframe><div style="width: 100%; height: 100px; background-color: #259; color: white"><br><h2>Substituir</h2></div>'
+                document.getElementById('campo-nota').innerHTML = '<iframe src="/static/media/{{ ct.nota_fiscal }}" id="rg-preview" style="width: 100%; height: 300px" alt=""></iframe><div style="width: 100%; height: 100px; background-color: #259; color: white"><br><h2>Substituir</h2></div>'
             }
             function readImageNota() {
                 if (this.files && this.files[0]) {
