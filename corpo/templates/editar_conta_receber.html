@@ -91,6 +91,9 @@
                 </script>
                 {% for c in contas %}
                     {% if ct.conta_bancaria == c.id %}
+                    <script>
+                        alert('{{ c.apelido }}')
+                    </script>
                     <option value="{{ c.id }}" selected>{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
                     {% else %}
                     <option value="{{ c.id }}">{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
