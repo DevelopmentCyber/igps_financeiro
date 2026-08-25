@@ -86,14 +86,8 @@
         <div style="float: left; width: 50%;">
             Conta bancária: <br>
             <select name="conta_bancaria" id="">
-                <script>
-                    alert('{{ ct.conta_bancaria }}')
-                </script>
                 {% for c in contas %}
-                    {% if ct.conta_bancaria == c.id %}
-                    <script>
-                        alert('{{ c.apelido }}')
-                    </script>
+                    {% if ct.conta_bancaria|stringformat:"s" == c.id|stringformat:"s" %}
                     <option value="{{ c.id }}" selected>{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
                     {% else %}
                     <option value="{{ c.id }}">{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
