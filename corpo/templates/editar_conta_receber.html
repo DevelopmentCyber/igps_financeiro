@@ -75,7 +75,7 @@
             Centro de custo: <br>
             <select name="centro_custo" id="">
                 {% for c in centros %}
-                    {% ct.centro_custo == c.id %}
+                    {% if ct.centro_custo == c.id %}
                         <option value="{{ c.id }}" selected>{{ c.nome }}</option>
                     {% else %}
                         <option value="{{ c.id }}">{{ c.nome }}</option>
