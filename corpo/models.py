@@ -62,7 +62,7 @@ class Fornecedor(models.Model):
     uf = models.CharField(max_length=200)
     telefone = models.CharField(max_length=200, null=True)
     email = models.CharField(max_length=200)
-    contrato_social = models.FileField(null=True, null=True)
+    contrato_social = models.FileField(null=True)
     cartao_cnpj = models.FileField(null=True)
     data_abertura = models.CharField(max_length=200)
     atuacao = models.CharField(max_length=200)
