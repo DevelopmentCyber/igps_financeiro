@@ -670,16 +670,13 @@ def tela_login(request):
     for d in despesas:
 
         # Mantém apenas os números do CNPJ
-        cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
-
-        if len(cnpj_limpo) != 14:
-            continue
+        cnpj_limpo = str(d.vinculo).split('.', '').split('.', '').split('.', '').split('.', '').split('.', '').split('-', '').split('/', '')
 
         # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
         response = requests.get(
             f"http://receitaws.com.br/v1/cnpj/{cnpj_limpo}",
             headers=headers,
-            timeout=10,
+            timeout=30,
         )
 
         if response.status_code == 200:
@@ -691,13 +688,10 @@ def tela_login(request):
                 ContasPagar.objects.filter(id=d.id).update(
                     nome_vinculo=razao_social
                 )
-                print(
-                    f"Sucesso [ID {d.id}]: CNPJ {cnpj_limpo} -> {razao_social}"
-                )
 
         # O plano gratuito do ReceitaWS limita a 3 requisições por minuto (1 a cada 20s)
         # Para o plano pago, esse delay pode ser reduzido para 0.5s ou 1s
-        time.sleep(10)
+        time.sleep(30)
     try:
         user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
         user.save()
