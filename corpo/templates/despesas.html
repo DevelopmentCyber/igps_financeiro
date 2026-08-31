@@ -65,14 +65,14 @@
           </span></th>
            {% endif %}
            {% endif %}
-            <th style="background-color: #808080;" scope="row"><a style="color: white" href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
+            <th style="background-color: #808080;" scope="row"><a style="color: white" href="/ver_despesa/{{ d.id }}/">{{ d.id }}</a></th>
             <td style="background-color: #808080;"><a style="color: white" href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
             <td style="background-color: #808080; color: white">{{ d.valor }}</td>
             <td style="background-color: #808080; color: white">{{ d.data }}</td>
             <td style="background-color: #808080; color: white">{{ d.entidade }}</td>
             <td style="background-color: #808080; color: white" class="cnpj-cell">{{ d.vinculo }}</td>
             <td style="background-color: #808080; color: white" id="razao-social-{{ d.id }}" class="razao-social-cell">
-              <small><i>Na fila...</i></small>
+              {{ d.nome_vinculo|default:"-" }}
             </td>
             <td style="background-color: #808080; color: white"><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
             <script>
@@ -82,14 +82,14 @@
           {% else %}
           <tr>
             <th></th>
-            <th scope="row"><a href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
+            <th scope="row"><a href="/ver_despesa/{{ d.id }}/">{{ d.id }}</a></th>
             <td><a href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
             <td>{{ d.valor }}</td>
             <td>{{ d.data }}</td>
             <td>{{ d.entidade }}</td>
             <td class="cnpj-cell">{{ d.vinculo }}</td>
             <td id="razao-social-{{ d.id }}" class="razao-social-cell">
-              <small><i>Na fila...</i></small>
+              {{ d.nome_vinculo|default:"-" }}
             </td>
             <td><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
@@ -113,75 +113,6 @@
 </div>
 
 <script>
-const cacheCNPJ = {};
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-// Lista de itens para consultar em fila
-const filaCNPJ = [
-    {% for d in despesas %}
-    { cnpj: "{{ d.vinculo }}", elementId: "razao-social-{{ d.id }}" },
-    {% endfor %}
-];
-
-async function consultarCNPJSingle(cnpj) {
-    const cnpjLimpo = cnpj.replace(/\D/g, '');
-    
-    if (cnpjLimpo.length !== 14) return "-";
-    if (cacheCNPJ[cnpjLimpo]) return cacheCNPJ[cnpjLimpo];
-
-    try {
-        const response = await fetch('/consulta_cnpj/', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ cnpj: cnpjLimpo })
-        });
-        const data = await response.json();
-        const nomeSocial = data.nome || "Não encontrado";
-        cacheCNPJ[cnpjLimpo] = nomeSocial;
-        return nomeSocial;
-    } catch (err) {
-        console.error("Erro na consulta do CNPJ:", err);
-        return "Erro na consulta";
-    }
-}
-
-// Processa a fila um por um aguardando 5000ms (5s) entre requisições reais
-async function processarFilaCNPJ() {
-    for (let i = 0; i < filaCNPJ.length; i++) {
-        const item = filaCNPJ[i];
-        const el = document.getElementById(item.elementId);
-        const cnpjLimpo = item.cnpj ? item.cnpj.replace(/\D/g, '') : '';
-
-        if (!cnpjLimpo || cnpjLimpo.length !== 14) {
-            if (el) el.innerText = "-";
-            continue;
-        }
-
-        // Se já está em cache, não aguarda os 3 segundos
-        if (cacheCNPJ[cnpjLimpo]) {
-            if (el) el.innerText = cacheCNPJ[cnpjLimpo];
-            continue;
-        }
-
-        if (el) el.innerHTML = "<small><i>Consultando...</i></small>";
-
-        const resultado = await consultarCNPJSingle(item.cnpj);
-        if (el) el.innerText = resultado;
-
-        // Se houver mais itens na fila, aguarda 3 segundos antes da próxima consulta
-        if (i < filaCNPJ.length - 1) {
-            await delay(10000);
-        }
-    }
-}
-
-document.addEventListener("DOMContentLoaded", function() {
-    processarFilaCNPJ();
-});
-
 function autorizarConta(id) {
     fetch(`/autorizar_conta/${id}/`, {
         method: 'GET',

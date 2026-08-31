@@ -13,6 +13,9 @@ from django.http import JsonResponse
 from django.db.models import Q
 from .ip_to_endereco import *
 from django.http import HttpResponse
+import time
+import requests
+import re
 
 ##################################
 ##       CONTAS BANCÁRIAS       ##
@@ -542,6 +545,59 @@ def deletar_despesa(request, cod):
 
 @login_required
 def despesas(request):
+    # URL da API de consulta de CNPJ (Ajuste para a URL/endpoint correto que você utiliza)
+    API_URL = "https://www.receitaws.com.br/v1/cnpj/"
+
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "application/json",
+    }
+
+    despesas = ContasPagar.objects.all()
+
+    for d in despesas:
+        if not d.vinculo:
+            continue
+
+        # Remove pontuações (pontos, traços e barras) deixando apenas números
+        cnpj_limpo = re.sub(r"\D", "", str(d.vinculo))
+
+        # Validação básica: se o CNPJ não tiver 14 dígitos, pula
+        if len(cnpj_limpo) != 14:
+            continue
+
+        # Evita reconsultar os registros que já possuem a razão social preenchida
+        if d.nome_vinculo and d.nome_vinculo.strip() != "":
+            continue
+
+        try:
+            # Requisição para a API externa
+            response = requests.get(f"{API_URL}{cnpj_limpo}", headers=headers, timeout=10)
+
+            if response.status_code == 200:
+                dados = response.json()
+                # Captura o nome/razão social retornado pela API
+                razao_social = dados.get("nome", "")
+
+                if razao_social:
+                    # Atualiza diretamente no banco de dados conforme especificado
+                    ContasPagar.objects.filter(id=d.id).update(
+                        nome_vinculo=razao_social
+                    )
+                    print(
+                        f"Sucesso [ID {d.id}]: CNPJ {cnpj_limpo} -> {razao_social}"
+                    )
+            elif response.status_code == 429:
+                print(
+                    f"Limite de requisições atingido na API para o ID {d.id}. Aguardando..."
+                )
+
+        except Exception as e:
+            print(f"Erro ao consultar CNPJ {cnpj_limpo} para a despesa {d.id}: {e}")
+
+        # Pausa de 3 segundos estrita entre cada consulta para respeitar o Rate Limit da API
+        time.sleep(10)
+
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
     Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
