@@ -148,7 +148,7 @@ async function consultarCNPJSingle(cnpj) {
     }
 }
 
-// Processa a fila um por um aguardando 3000ms (3s) entre requisições reais
+// Processa a fila um por um aguardando 5000ms (5s) entre requisições reais
 async function processarFilaCNPJ() {
     for (let i = 0; i < filaCNPJ.length; i++) {
         const item = filaCNPJ[i];
@@ -173,7 +173,7 @@ async function processarFilaCNPJ() {
 
         // Se houver mais itens na fila, aguarda 3 segundos antes da próxima consulta
         if (i < filaCNPJ.length - 1) {
-            await delay(3000);
+            await delay(5000);
         }
     }
 }
