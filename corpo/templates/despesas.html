@@ -17,7 +17,6 @@
 <b>Valor total de pagamentos pendentes: </b> R$ <i id="valor_aberto"></i> 
 
 <a style="float: right; margin-left: 5px;" class="badge bg-danger" target="_blank" href="/relatorio_despesas/">Relatório GERAL em PDF</a> 
-<!-- Botão configurado para chamar o script JS -->
 <a style="float: right; cursor: pointer;" class="badge bg-success" onclick="exportarParaExcel()">Relatório GERAL em Excel</a>
 
 <script>x = 0; y = 0</script>
@@ -38,8 +37,8 @@
             <th scope="col">Valor</th>
             <th scope="col">Data</th>
             <th scope="col">Entidade</th>
-            <th scope="col">Vínculo</th>
-            <th scope="col"></th>
+            <th scope="col">Vínculo (CNPJ)</th>
+            <th scope="col">Razão Social</th>
             <th scope="col"></th>
           </tr>
         </thead>
@@ -71,10 +70,13 @@
             <td style="background-color: #808080; color: white">{{ d.valor }}</td>
             <td style="background-color: #808080; color: white">{{ d.data }}</td>
             <td style="background-color: #808080; color: white">{{ d.entidade }}</td>
-            <td style="background-color: #808080; color: white">{{ d.vinculo }}</td>
+            <td style="background-color: #808080; color: white" class="cnpj-cell">{{ d.vinculo }}</td>
+            <td style="background-color: #808080; color: white" id="razao-social-{{ d.id }}" class="razao-social-cell">
+              <small><i>Carregando...</i></small>
+            </td>
             <td style="background-color: #808080; color: white"><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
             <script>
-              y = y + Number.parseFloat('{{ d.valor }}'.replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace(',', '.'))
+              y = y + Number.parseFloat('{{ d.valor }}'.replace(/\./g, '').replace(',', '.'))
             </script>
           </tr>
           {% else %}
@@ -85,12 +87,15 @@
             <td>{{ d.valor }}</td>
             <td>{{ d.data }}</td>
             <td>{{ d.entidade }}</td>
-            <td>{{ d.nome_vinculo }}</td>
+            <td class="cnpj-cell">{{ d.vinculo }}</td>
+            <td id="razao-social-{{ d.id }}" class="razao-social-cell">
+              <small><i>Carregando...</i></small>
+            </td>
             <td><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
           {% endif %}
           <script>
-            x = x + Number.parseFloat('{{ d.valor }}'.replace('.', '').replace('.', '').replace('.', '').replace('.', '').replace(',', '.'))
+            x = x + Number.parseFloat('{{ d.valor }}'.replace(/\./g, '').replace(',', '.'))
           </script>
           {% endfor %}
           <script>
@@ -101,15 +106,62 @@
             document.getElementById('valor_aberto').textContent = String(y.toFixed(2))
           </script>
         </tbody>
-        
       </table>
 
     </div>
-
   </div>
 </div>
 
 <script>
+// Cache em memória para não consultar o mesmo CNPJ várias vezes na API
+const cacheCNPJ = {};
+
+function buscarRazaoSocial(cnpj, elementId) {
+    if (!cnpj) {
+        document.getElementById(elementId).innerText = "-";
+        return;
+    }
+
+    const cnpjLimpo = cnpj.replace(/\D/g, '');
+
+    if (cnpjLimpo.length !== 14) {
+        document.getElementById(elementId).innerText = "-";
+        return;
+    }
+
+    // Se já foi buscado anteriormente, aproveita o resultado
+    if (cacheCNPJ[cnpjLimpo]) {
+        document.getElementById(elementId).innerText = cacheCNPJ[cnpjLimpo];
+        return;
+    }
+
+    fetch('/consulta_cnpj/', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cnpj: cnpjLimpo })
+    })
+    .then(res => res.json())
+    .then(data => {
+        const nomeSocial = data.nome || "Não encontrado";
+        cacheCNPJ[cnpjLimpo] = nomeSocial;
+        document.getElementById(elementId).innerText = nomeSocial;
+    })
+    .catch(err => {
+        console.error("Erro ao buscar CNPJ:", err);
+        document.getElementById(elementId).innerText = "Erro na consulta";
+    });
+}
+
+// Inicializa a busca de CNPJs de todas as linhas ao carregar a página
+document.addEventListener("DOMContentLoaded", function() {
+    {% for d in despesas %}
+        buscarRazaoSocial("{{ d.vinculo }}", "razao-social-{{ d.id }}");
+    {% endfor %}
+});
+
 function autorizarConta(id) {
     fetch(`/autorizar_conta/${id}/`, {
         method: 'GET',
@@ -118,9 +170,7 @@ function autorizarConta(id) {
         }
     })
     .then(response => {
-        if (!response.ok) {
-            throw new Error('Erro ao autorizar');
-        }
+        if (!response.ok) throw new Error('Erro ao autorizar');
         return response.text();
     })
     .then(() => {
@@ -133,23 +183,21 @@ function autorizarConta(id) {
     });
 }
 
-// Função para gerar e baixar a tabela em Excel
+// Exportação para Excel incluindo a Razão Social capturada
 function exportarParaExcel() {
     const tabela = document.getElementById("tabelaDespesas");
     const dados = [];
 
-    // Capturar o cabeçalho (ignorando a primeira coluna 'Pagar' e últimas com botões)
-    const cabecalho = ["ID", "Descrição", "Valor", "Data", "Entidade", "Vínculo"];
+    // Cabeçalho ajustado
+    const cabecalho = ["ID", "Descrição", "Valor", "Data", "Entidade", "Vínculo (CNPJ)", "Razão Social"];
     dados.push(cabecalho);
 
-    // Iterar pelas linhas da tabela
     const linhas = tabela.querySelectorAll("tbody tr");
     linhas.forEach(linha => {
         const colunas = linha.querySelectorAll("th, td");
         
-        // Se a linha possuir dados suficientes
-        if (colunas.length >= 7) {
-            // Ajustamos o índice dependendo se há o botão 'Pagar' na 1ª célula
+        if (colunas.length >= 8) {
+            // Ajuste do offset se a primeira coluna contiver o botão 'Pagar'
             let offset = colunas.length > 8 ? 1 : 1; 
 
             let id = colunas[offset].innerText.trim();
@@ -158,30 +206,35 @@ function exportarParaExcel() {
             let data = colunas[offset + 3].innerText.trim();
             let entidade = colunas[offset + 4].innerText.trim();
             let vinculo = colunas[offset + 5].innerText.trim();
+            let razaoSocial = colunas[offset + 6].innerText.trim();
 
-            dados.push([id, descricao, valor, data, entidade, vinculo]);
+            dados.push([id, descricao, valor, data, entidade, vinculo, razaoSocial]);
         }
     });
 
-    // Criar a planilha a partir dos dados limpos
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(dados);
 
-    // Ajustar larguras das colunas no Excel
+    // Larguras das colunas no arquivo Excel
     ws['!cols'] = [
         { wch: 10 }, // ID
         { wch: 35 }, // Descrição
         { wch: 15 }, // Valor
         { wch: 12 }, // Data
         { wch: 25 }, // Entidade
-        { wch: 25 }  // Vínculo
+        { wch: 20 }, // Vínculo (CNPJ)
+        { wch: 40 }  // Razão Social
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, "Despesas");
-
-    // Baixar o arquivo .xlsx instantaneamente
     XLSX.writeFile(wb, "relatorio_despesas.xlsx");
 }
 </script>
-  
+
+{% if msg %}
+<script>
+    alert("{{ msg }}");
+</script>
+{% endif %}
+
 {% endblock %}

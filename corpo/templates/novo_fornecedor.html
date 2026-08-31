@@ -158,243 +158,52 @@
     <button style="padding: 10px; border-radius: 5px; border: 1px solid black; background-color: greenyellow;" id="botao"><i class="fas fa-save"></i> Salvar</button>
     <br><br>       
 </form>
-{% extends 'painel.html' %}
-
-{% block link %}
-<!-- Biblioteca SheetJS para geração nativa de arquivos .xlsx via Browser -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.min.js"></script>
-
-<h1>Despesas</h1>
-<nav>
-<ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="https://igps.net.br/painel/">Página inicial</a></li>
-    <li class="breadcrumb-item">Painel de controle</li>
-    <li class="breadcrumb-item">Financeiro</li>
-    <li class="breadcrumb-item active">Despesas</li>
-</ol>
-</nav>
-<b>Valor total: </b> R$ <i id="valor"></i> 
-<b>Valor total de pagamentos pendentes: </b> R$ <i id="valor_aberto"></i> 
-
-<a style="float: right; margin-left: 5px;" class="badge bg-danger" target="_blank" href="/relatorio_despesas/">Relatório GERAL em PDF</a> 
-<a style="float: right; cursor: pointer;" class="badge bg-success" onclick="exportarParaExcel()">Relatório GERAL em Excel</a>
-
-<script>x = 0; y = 0</script>
-{% endblock %}
-
-{% block content %}
-
-<div class="col-12">
-  <div class="card recent-sales overflow-auto">
-    <div class="card-body">
-
-      <table class="table table-borderless datatable" id="tabelaDespesas">
-        <thead>
-          <tr>
-            <th></th>
-            <th scope="col">ID</th>
-            <th scope="col">Descrição</th>
-            <th scope="col">Valor</th>
-            <th scope="col">Data</th>
-            <th scope="col">Entidade</th>
-            <th scope="col">Vínculo (CNPJ)</th>
-            <th scope="col">Razão Social</th>
-            <th scope="col"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for d in despesas %}
-          {% if 'FINANCEIRO TOTAL' in permissao %}
-          {% if d.comprovante_pagamento == '' or d.comprovante_pagamento == None or d.nota_fatura == '' or d.nota_fatura == None %}
-          <tr title="Documento ausente">
-            {% if d.autorizacao == '' or d.autorizacao == None %}
-              <th style="background-color: #808080; text-align: center;"><a href="javascript:void(0)"
-                id="btn-pagar-{{ d.id }}"
-                onclick="autorizarConta({{ d.id }})"
-                style="background-color: green; color: white; padding: 10px; text-decoration: none; border-radius: 5px;">
-                Pagar
-            </a>
-            
-            <span id="status-{{ d.id }}" style="display:none; color:white; font-weight:bold;">
-              ✔ Autorizado
-            </span>
-           </th>
-           {% else %}
-           <th style="background-color: #808080; text-align: center;"><span id="status-{{ d.id }}" style="color:white; font-weight:bold;">
-            ✔ Autorizado
-          </span></th>
-           {% endif %}
-           {% endif %}
-            <th style="background-color: #808080;" scope="row"><a style="color: white" href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
-            <td style="background-color: #808080;"><a style="color: white" href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
-            <td style="background-color: #808080; color: white">{{ d.valor }}</td>
-            <td style="background-color: #808080; color: white">{{ d.data }}</td>
-            <td style="background-color: #808080; color: white">{{ d.entidade }}</td>
-            <td style="background-color: #808080; color: white" class="cnpj-cell">{{ d.vinculo }}</td>
-            <td style="background-color: #808080; color: white" id="razao-social-{{ d.id }}" class="razao-social-cell">
-              <small><i>Carregando...</i></small>
-            </td>
-            <td style="background-color: #808080; color: white"><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
-            <script>
-              y = y + Number.parseFloat('{{ d.valor }}'.replace(/\./g, '').replace(',', '.'))
-            </script>
-          </tr>
-          {% else %}
-          <tr>
-            <th></th>
-            <th scope="row"><a href="/ver_despesa/{{ c.id }}/">{{ d.id }}</a></th>
-            <td><a href="/ver_despesa/{{ d.id }}/">{{ d.descricao }}</a></td>
-            <td>{{ d.valor }}</td>
-            <td>{{ d.data }}</td>
-            <td>{{ d.entidade }}</td>
-            <td class="cnpj-cell">{{ d.vinculo }}</td>
-            <td id="razao-social-{{ d.id }}" class="razao-social-cell">
-              <small><i>Carregando...</i></small>
-            </td>
-            <td><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
-          </tr>
-          {% endif %}
-          <script>
-            x = x + Number.parseFloat('{{ d.valor }}'.replace(/\./g, '').replace(',', '.'))
-          </script>
-          {% endfor %}
-          <script>
-            x = Math.round(x, 2)
-            document.getElementById('valor').textContent = String(x.toFixed(2))
-
-            y = Math.round(y, 2)
-            document.getElementById('valor_aberto').textContent = String(y.toFixed(2))
-          </script>
-        </tbody>
-      </table>
-
-    </div>
-  </div>
-</div>
-
 <script>
-// Cache em memória para não consultar o mesmo CNPJ várias vezes na API
-const cacheCNPJ = {};
-
-function buscarRazaoSocial(cnpj, elementId) {
-    if (!cnpj) {
-        document.getElementById(elementId).innerText = "-";
-        return;
-    }
-
-    const cnpjLimpo = cnpj.replace(/\D/g, '');
-
-    if (cnpjLimpo.length !== 14) {
-        document.getElementById(elementId).innerText = "-";
-        return;
-    }
-
-    // Se já foi buscado anteriormente, aproveita o resultado
-    if (cacheCNPJ[cnpjLimpo]) {
-        document.getElementById(elementId).innerText = cacheCNPJ[cnpjLimpo];
-        return;
-    }
-
-    fetch('/consulta_cnpj/', {
-        method: 'POST',
-        headers: {
+    function consultarReceita(cnpj) {
+    (async () => {
+        const rawResponse = await fetch('/consulta_cnpj/', {
+            method: 'POST',
+            headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ cnpj: cnpjLimpo })
-    })
-    .then(res => res.json())
-    .then(data => {
-        const nomeSocial = data.nome || "Não encontrado";
-        cacheCNPJ[cnpjLimpo] = nomeSocial;
-        document.getElementById(elementId).innerText = nomeSocial;
-    })
-    .catch(err => {
-        console.error("Erro ao buscar CNPJ:", err);
-        document.getElementById(elementId).innerText = "Erro na consulta";
-    });
-}
+            },
+            body: JSON.stringify({cnpj: cnpj.replace('.', '').replace('.', '').replace('.', '').replace('/', '').replace('-', '')})
+        });
+        const content = await rawResponse.json();
+        //console.log(String(content['nome']))
+        document.getElementById('nome').value = String(content['nome']);
+        document.getElementById('abertura').value = String(content['abertura']);
+        document.getElementById('cep').value = String(content['cep']);
+        document.getElementById('logradouro').value = String(content['logradouro']);
+        document.getElementById('n').value = String(content['numero']);
+        document.getElementById('municipio').value = String(content['municipio']);
+        document.getElementById('bairro').value = String(content['bairro']);
+        document.getElementById('uf').value = String(content['uf']);
 
-// Inicializa a busca de CNPJs de todas as linhas ao carregar a página
-document.addEventListener("DOMContentLoaded", function() {
-    {% for d in despesas %}
-        buscarRazaoSocial("{{ d.vinculo }}", "razao-social-{{ d.id }}");
-    {% endfor %}
-});
+        const atividades = [];
 
-function autorizarConta(id) {
-    fetch(`/autorizar_conta/${id}/`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
+        // adiciona a principal
+        if (content.atividade_principal?.length) {
+        atividades.push(`Principal - ${content.atividade_principal[0].text} (${content.atividade_principal[0].code})`);
         }
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Erro ao autorizar');
-        return response.text();
-    })
-    .then(() => {
-        document.getElementById(`btn-pagar-${id}`).style.display = 'none';
-        document.getElementById(`status-${id}`).style.display = 'inline';
-    })
-    .catch(error => {
-        alert('Não foi possível autorizar a despesa.');
-        console.error(error);
-    });
-}
 
-// Exportação para Excel incluindo a Razão Social capturada
-function exportarParaExcel() {
-    const tabela = document.getElementById("tabelaDespesas");
-    const dados = [];
+        // adiciona as secundárias
+        if (content.atividades_secundarias?.length) {
+        content.atividades_secundarias.forEach(a => {
+            atividades.push(`${a.text} (${a.code})`);
+        });
+        }
 
-    // Cabeçalho ajustado
-    const cabecalho = ["ID", "Descrição", "Valor", "Data", "Entidade", "Vínculo (CNPJ)", "Razão Social"];
-    dados.push(cabecalho);
-
-    const linhas = tabela.querySelectorAll("tbody tr");
-    linhas.forEach(linha => {
-        const colunas = linha.querySelectorAll("th, td");
+        // junta tudo em um texto com quebras de linha
+        document.getElementById("atuacao").innerHTML = atividades.join("\n");
         
-        if (colunas.length >= 8) {
-            // Ajuste do offset se a primeira coluna contiver o botão 'Pagar'
-            let offset = colunas.length > 8 ? 1 : 1; 
-
-            let id = colunas[offset].innerText.trim();
-            let descricao = colunas[offset + 1].innerText.trim();
-            let valor = colunas[offset + 2].innerText.trim();
-            let data = colunas[offset + 3].innerText.trim();
-            let entidade = colunas[offset + 4].innerText.trim();
-            let vinculo = colunas[offset + 5].innerText.trim();
-            let razaoSocial = colunas[offset + 6].innerText.trim();
-
-            dados.push([id, descricao, valor, data, entidade, vinculo, razaoSocial]);
-        }
-    });
-
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(dados);
-
-    // Larguras das colunas no arquivo Excel
-    ws['!cols'] = [
-        { wch: 10 }, // ID
-        { wch: 35 }, // Descrição
-        { wch: 15 }, // Valor
-        { wch: 12 }, // Data
-        { wch: 25 }, // Entidade
-        { wch: 20 }, // Vínculo (CNPJ)
-        { wch: 40 }  // Razão Social
-    ];
-
-    XLSX.utils.book_append_sheet(wb, ws, "Despesas");
-    XLSX.writeFile(wb, "relatorio_despesas.xlsx");
+    })();
 }
 </script>
-
-{% if msg %}
 <script>
-    alert("{{ msg }}");
+    if (!("{{ msg }}" == "")) {
+        alert("{{ msg }}");
+    }
 </script>
-{% endif %}
 
 {% endblock %}
