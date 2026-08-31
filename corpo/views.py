@@ -670,7 +670,7 @@ def tela_login(request):
     for d in despesas:
 
         # Mantém apenas os números do CNPJ
-        cnpj_limpo = str(d.vinculo).split('.', '').split('.', '').split('.', '').split('.', '').split('.', '').split('-', '').split('/', '')
+        cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
 
         # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
         response = requests.get(
