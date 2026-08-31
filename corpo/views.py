@@ -498,7 +498,6 @@ def novo_fornecedor(request):
 
 @login_required
 def filtro_contas_pagar(request):
-    msg = ''
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
     Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
@@ -554,10 +553,55 @@ def deletar_despesa(request, cod):
 
 @login_required
 def despesas(request):
+    despesas = ContasPagar.objects.filter(status='')
+    
+    descricao = request.GET.get('descricao')
+    entidade = request.GET.get('entidade')
+    vinculo = request.GET.get('vinculo')
+    nome_vinculo = request.GET.get('nome_vinculo')
+    status = request.GET.get('status')
+    centrodecusto = request.GET.get('centrodecusto')
+    contrato = request.GET.get('contrato')
+    fonte = request.GET.get('fonte')
+    conta_bancaria = request.GET.get('conta_bancaria')
+    data_inicio = request.GET.get('data_inicio')
+    data_fim = request.GET.get('data_fim')
+    valor_min = request.GET.get('valor_min')
+    valor_max = request.GET.get('valor_max')
+
+    # Aplicação dinâmica dos filtros no QuerySet
+    if descricao:
+        despesas = despesas.filter(descricao__icontains=descricao)
+    if entidade:
+        despesas = despesas.filter(entidade__icontains=entidade)
+    if vinculo:
+        despesas = despesas.filter(vinculo__icontains=vinculo)
+    if nome_vinculo:
+        despesas = despesas.filter(nome_vinculo__icontains=nome_vinculo)
+    if status:
+        despesas = despesas.filter(status__icontains=status)
+    if centrodecusto:
+        despesas = despesas.filter(centrodecusto__icontains=centrodecusto)
+    if contrato:
+        despesas = despesas.filter(contrato__icontains=contrato)
+    if fonte:
+        despesas = despesas.filter(fonte__icontains=fonte)
+    if conta_bancaria:
+        despesas = despesas.filter(conta_bancaria__icontains=conta_bancaria)
+
+    if data_inicio:
+        despesas = despesas.filter(data__gte=data_inicio)
+    if data_fim:
+        despesas = despesas.filter(data__lte=data_fim)
+
+    if valor_min:
+        despesas = despesas.filter(valor__gte=valor_min)
+    if valor_max:
+        despesas = despesas.filter(valor__lte=valor_max)
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
     Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
-    return render(request, 'despesas.html', {'permissao': request.user.last_name, 'despesas': ContasPagar.objects.filter(status='').order_by('-id')})
+    return render(request, 'despesas.html', {'permissao': request.user.last_name, 'despesas': despesas.order_by('-id')})
 
 @login_required
 def pre_nova_despesa(request):
