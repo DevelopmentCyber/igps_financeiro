@@ -603,8 +603,8 @@ def nova_despesa(request, cod):
     if request.method == 'POST':
         usuario_cadastro = request.user.username
         valor = request.POST.get('valor')
-        vinculo = request.POST.get('vinculo').split('-')[0] + '-' + request.POST.get('vinculo').split('-')[1]
-        nome_vinculo = request.POST.get('vinculo').split('-')[1]
+        vinculo = request.POST.get('vinculo').split(';')[0] + '-' + request.POST.get('vinculo').split(';')[1]
+        nome_vinculo = request.POST.get('vinculo').split(';')[1]
         data = request.POST.get('data')
         obs = request.POST.get('obs')
         descricao = request.POST.get('descricao')

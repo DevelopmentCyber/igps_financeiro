@@ -316,9 +316,9 @@
                 <option value="Colaboradores" disabled>Colaboradores</option>
                 {% for c in colaboradores %}
                     {% if c.cpf == p.vinculo %}
-                    <option value="{{ c.cpf }}-{{ c.nome }}" selected>{{ c.nome }} | {{ c.cpf }}</option>
+                    <option value="{{ c.cpf }};{{ c.nome }}" selected>{{ c.nome }} | {{ c.cpf }}</option>
                     {% else %}
-                    <option value="{{ c.cpf }}-{{ c.nome }}">{{ c.nome }} | {{ c.cpf }}</option>
+                    <option value="{{ c.cpf }};{{ c.nome }}">{{ c.nome }} | {{ c.cpf }}</option>
                     {% endif %}
                 {% endfor %}
                 
