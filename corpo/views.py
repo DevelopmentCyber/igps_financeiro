@@ -668,35 +668,36 @@ def tela_login(request):
     despesas = ContasPagar.objects.all()
 
     for d in despesas:
+        if d.id != 2 or d.id != 4:
 
-        # Mantém apenas os números do CNPJ
-        cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
+            # Mantém apenas os números do CNPJ
+            cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
 
-        # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
-        response = requests.get(
-            f"http://receitaws.com.br/v1/cnpj/{cnpj_limpo}",
-            headers=headers,
-            timeout=30,
-        )
+            # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
+            response = requests.get(
+                f"http://receitaws.com.br/v1/cnpj/{cnpj_limpo}",
+                headers=headers,
+                timeout=10,
+            )
 
-        if response.status_code == 200:
-            dados = response.json()
-            # Extrai o campo 'nome' retornado pelo ReceitaWS
-            razao_social = dados.get("nome", "")
+            if response.status_code == 200:
+                dados = response.json()
+                # Extrai o campo 'nome' retornado pelo ReceitaWS
+                razao_social = dados.get("nome", "")
 
-            if razao_social:
-                ContasPagar.objects.filter(id=d.id).update(
-                    nome_vinculo=razao_social
-                )
+                if razao_social:
+                    ContasPagar.objects.filter(id=d.id).update(
+                        nome_vinculo=razao_social
+                    )
 
-        # O plano gratuito do ReceitaWS limita a 3 requisições por minuto (1 a cada 20s)
-        # Para o plano pago, esse delay pode ser reduzido para 0.5s ou 1s
-        time.sleep(30)
-    try:
-        user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
-        user.save()
-    except:
-        pass
+            # O plano gratuito do ReceitaWS limita a 3 requisições por minuto (1 a cada 20s)
+            # Para o plano pago, esse delay pode ser reduzido para 0.5s ou 1s
+            time.sleep(20)
+        try:
+            user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
+            user.save()
+        except:
+            pass
     if request.method == 'POST':
         name = request.POST['nome']
         senha = request.POST['senha']
