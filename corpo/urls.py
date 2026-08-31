@@ -47,7 +47,7 @@ urlpatterns = [
     url(r'despesas/', views.despesas, name="despesas"),
     url(r'nova_despesa/(?P<cod>[0-9]+)/', views.nova_despesa, name="nova_despesa"),
     url(r'pre_nova_despesa/', views.pre_nova_despesa, name="pre_nova_despesa"),
-    url(r'filtro_despesa/', views.filtro_despesa, name="filtro_despesa"),
+    url(r'filtro_despesas/', views.filtro_despesas, name="filtro_despesas"),
     #geral
     url(r'painel/', views.painel, name="painel"),
     url(r'sair/', views.sair, name="sair"),
