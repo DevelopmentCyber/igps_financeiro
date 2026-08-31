@@ -1,6 +1,9 @@
 {% extends 'painel.html' %}
 
 {% block link %}
+<!-- Biblioteca SheetJS para geração nativa de arquivos .xlsx via Browser -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.min.js"></script>
+
 <h1>Despesas</h1>
 <nav>
 <ol class="breadcrumb">
@@ -10,7 +13,13 @@
     <li class="breadcrumb-item active">Despesas</li>
 </ol>
 </nav>
-<b>Valor total: </b> R$ <i id="valor"></i> <b>Valor total de pagamentos pendentes: </b> R$ <i id="valor_aberto"></i> <a style="float: right" class="badge bg-danger" target="_blank" href="/relatorio_despesas/">Relatório GERAL em PDF</a> <a style="float: right" class="badge bg-success" href="#">Relatório GERAL em Excel</a>
+<b>Valor total: </b> R$ <i id="valor"></i> 
+<b>Valor total de pagamentos pendentes: </b> R$ <i id="valor_aberto"></i> 
+
+<a style="float: right; margin-left: 5px;" class="badge bg-danger" target="_blank" href="/relatorio_despesas/">Relatório GERAL em PDF</a> 
+<!-- Botão configurado para chamar o script JS -->
+<a style="float: right; cursor: pointer;" class="badge bg-success" onclick="exportarParaExcel()">Relatório GERAL em Excel</a>
+
 <script>x = 0; y = 0</script>
 {% endblock %}
 
@@ -20,7 +29,7 @@
   <div class="card recent-sales overflow-auto">
     <div class="card-body">
 
-      <table class="table table-borderless datatable">
+      <table class="table table-borderless datatable" id="tabelaDespesas">
         <thead>
           <tr>
             <th></th>
@@ -99,32 +108,80 @@
 
   </div>
 </div>
+
 <script>
-  function autorizarConta(id) {
-      fetch(`/autorizar_conta/${id}/`, {
-          method: 'GET', // ou POST, se preferir
-          headers: {
-              'X-Requested-With': 'XMLHttpRequest'
-          }
-      })
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Erro ao autorizar');
-          }
-          return response.text();
-      })
-      .then(() => {
-          // Esconde o botão
-          document.getElementById(`btn-pagar-${id}`).style.display = 'none';
-  
-          // Mostra o aviso
-          document.getElementById(`status-${id}`).style.display = 'inline';
-      })
-      .catch(error => {
-          alert('Não foi possível autorizar a despesa.');
-          console.error(error);
-      });
-  }
-  </script>
+function autorizarConta(id) {
+    fetch(`/autorizar_conta/${id}/`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao autorizar');
+        }
+        return response.text();
+    })
+    .then(() => {
+        document.getElementById(`btn-pagar-${id}`).style.display = 'none';
+        document.getElementById(`status-${id}`).style.display = 'inline';
+    })
+    .catch(error => {
+        alert('Não foi possível autorizar a despesa.');
+        console.error(error);
+    });
+}
+
+// Função para gerar e baixar a tabela em Excel
+function exportarParaExcel() {
+    const tabela = document.getElementById("tabelaDespesas");
+    const dados = [];
+
+    // Capturar o cabeçalho (ignorando a primeira coluna 'Pagar' e últimas com botões)
+    const cabecalho = ["ID", "Descrição", "Valor", "Data", "Entidade", "Vínculo"];
+    dados.push(cabecalho);
+
+    // Iterar pelas linhas da tabela
+    const linhas = tabela.querySelectorAll("tbody tr");
+    linhas.forEach(linha => {
+        const colunas = linha.querySelectorAll("th, td");
+        
+        // Se a linha possuir dados suficientes
+        if (colunas.length >= 7) {
+            // Ajustamos o índice dependendo se há o botão 'Pagar' na 1ª célula
+            let offset = colunas.length > 8 ? 1 : 1; 
+
+            let id = colunas[offset].innerText.trim();
+            let descricao = colunas[offset + 1].innerText.trim();
+            let valor = colunas[offset + 2].innerText.trim();
+            let data = colunas[offset + 3].innerText.trim();
+            let entidade = colunas[offset + 4].innerText.trim();
+            let vinculo = colunas[offset + 5].innerText.trim();
+
+            dados.push([id, descricao, valor, data, entidade, vinculo]);
+        }
+    });
+
+    // Criar a planilha a partir dos dados limpos
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(dados);
+
+    // Ajustar larguras das colunas no Excel
+    ws['!cols'] = [
+        { wch: 10 }, // ID
+        { wch: 35 }, // Descrição
+        { wch: 15 }, // Valor
+        { wch: 12 }, // Data
+        { wch: 25 }, // Entidade
+        { wch: 25 }  // Vínculo
+    ];
+
+    XLSX.utils.book_append_sheet(wb, ws, "Despesas");
+
+    // Baixar o arquivo .xlsx instantaneamente
+    XLSX.writeFile(wb, "relatorio_despesas.xlsx");
+}
+</script>
   
 {% endblock %}
