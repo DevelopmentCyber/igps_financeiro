@@ -673,22 +673,13 @@ def tela_login(request):
             # Mantém apenas os números do CNPJ
             cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
 
-            # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
-            response = requests.get(
-                f"http://receitaws.com.br/v1/cnpj/{cnpj_limpo}",
-                headers=headers,
-                timeout=10,
-            )
+            fornecedor = Fornecedor.objects.filter(cnpj=cnpj_limpo)
+            razao_social = fornecedor.razao_social
 
-            if response.status_code == 200:
-                dados = response.json()
-                # Extrai o campo 'nome' retornado pelo ReceitaWS
-                razao_social = dados.get("nome", "")
-
-                if razao_social:
-                    ContasPagar.objects.filter(id=d.id).update(
-                        nome_vinculo=razao_social
-                    )
+            if razao_social:
+                ContasPagar.objects.filter(id=d.id).update(
+                    nome_vinculo=razao_social
+                )
 
             # O plano gratuito do ReceitaWS limita a 3 requisições por minuto (1 a cada 20s)
             # Para o plano pago, esse delay pode ser reduzido para 0.5s ou 1s
