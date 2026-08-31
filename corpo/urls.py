@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'nova_despesa/(?P<cod>[0-9]+)/', views.nova_despesa, name="nova_despesa"),
     url(r'pre_nova_despesa/', views.pre_nova_despesa, name="pre_nova_despesa"),
     url(r'filtro_contas_pagar/', views.filtro_contas_pagar, name="filtro_contas_pagar"),
+    url(r'filtro_contas_autorizadas/', views.filtro_contas_autorizadas, name="filtro_contas_autorizadas"),
     #geral
     url(r'painel/', views.painel, name="painel"),
     url(r'sair/', views.sair, name="sair"),

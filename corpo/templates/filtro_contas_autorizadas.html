@@ -1,0 +1,184 @@
+{% extends 'painel.html' %}
+
+{% block content %}
+<div class="col-12">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Filtrar Despesas</h5>
+
+      <form method="GET" action="/despesas_autorizadas/">
+        <div class="row g-3">
+          
+          <!-- Descrição (Select com opções categorizadas) -->
+          <div class="col-md-4">
+            <label class="form-label">Descrição</label>
+            <select name="descricao" class="form-select">
+              <option value="">Todas as descrições</option>
+              <option value="" disabled>CAIXA GERAL</option>
+              <option value="Aplicações" {% if request.GET.descricao == "Aplicações" %}selected{% endif %}>Aplicações</option>
+              <option value="" disabled>DEDUÇÕES DAS RECEITAS DE REPASSE</option>
+              <option value="Devolução de repasse" {% if request.GET.descricao == "Devolução de repasse" %}selected{% endif %}>Devolução de repasse</option>
+              <option value="" disabled>CAPITAL DE TERCEIROS</option>
+              <option value="Empréstimos" {% if request.GET.descricao == "Empréstimos" %}selected{% endif %}>Empréstimos</option>
+              <option value="" disabled>DESPESAS ADMINISTRATIVAS</option>
+              <option value="Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)" {% if request.GET.descricao == "Despesas com veículos (Que estiverem em nome da empresa/ou contrato de locação)" %}selected{% endif %}>Despesas com veículos</option>
+              <option value="Despesas de consumo (Material Limpeza)" {% if request.GET.descricao == "Despesas de consumo (Material Limpeza)" %}selected{% endif %}>Despesas de consumo (Material Limpeza)</option>
+              <option value="Despesas com subvenções, contribuições e doações" {% if request.GET.descricao == "Despesas com subvenções, contribuições e doações" %}selected{% endif %}>Despesas com subvenções, contribuições e doações</option>
+              <option value="Prestacao de servico por pessoa jurídica" {% if request.GET.descricao == "Prestacao de servico por pessoa jurídica" %}selected{% endif %}>Prestação de serviço por pessoa jurídica</option>
+              <option value="Despesas de alugueis" {% if request.GET.descricao == "Despesas de alugueis" %}selected{% endif %}>Despesas de alugueis</option>
+              <option value="Despesas de consumo (Material Expediente)" {% if request.GET.descricao == "Despesas de consumo (Material Expediente)" %}selected{% endif %}>Despesas de consumo (Material Expediente)</option>
+              <option value="Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)" {% if request.GET.descricao == "Despesas de consumo (Água Encanada, Esgoto, Energia elétrica, Comunicação)" %}selected{% endif %}>Despesas de consumo (Água, Energia, Comunicação)</option>
+              <option value="Despesas com manutenção e conservação de bens e instalações" {% if request.GET.descricao == "Despesas com manutenção e conservação de bens e instalações" %}selected{% endif %}>Despesas com manutenção e conservação</option>
+              <option value="Despesas com viagens, diárias e ajuda de custo" {% if request.GET.descricao == "Despesas com viagens, diárias e ajuda de custo" %}selected{% endif %}>Despesas com viagens, diárias e ajuda de custo</option>
+              <option value="Propaganda, Publicidade e Patrocínio" {% if request.GET.descricao == "Propaganda, Publicidade e Patrocínio" %}selected{% endif %}>Propaganda, Publicidade e Patrocínio</option>
+              <option value="Multas" {% if request.GET.descricao == "Multas" %}selected{% endif %}>Multas</option>
+              <option value="Encargos de depreciação/amortização/exaustão" {% if request.GET.descricao == "Encargos de depreciação/amortização/exaustão" %}selected{% endif %}>Encargos de depreciação/amortização/exaustão</option>
+              <option value="Despesa com provisões administrativas" {% if request.GET.descricao == "Despesa com provisões administrativas" %}selected{% endif %}>Despesa com provisões administrativas</option>
+              <option value="Outras despesas administrativas" {% if request.GET.descricao == "Outras despesas administrativas" %}selected{% endif %}>Outras despesas administrativas</option>
+              <option value="" disabled>DESPESAS FINANCEIRAS</option>
+              <option value="Despesas de juros e multas" {% if request.GET.descricao == "Despesas de juros e multas" %}selected{% endif %}>Despesas de juros e multas</option>
+              <option value="Descontos concedidos" {% if request.GET.descricao == "Descontos concedidos" %}selected{% endif %}>Descontos concedidos</option>
+              <option value="Variações monetárias" {% if request.GET.descricao == "Variações monetárias" %}selected{% endif %}>Variações monetárias</option>
+              <option value="Tarifas bancárias" {% if request.GET.descricao == "Tarifas bancárias" %}selected{% endif %}>Tarifas bancárias</option>
+              <option value="Outras despesas financeiras" {% if request.GET.descricao == "Outras despesas financeiras" %}selected{% endif %}>Outras despesas financeiras</option>
+              <option value="" disabled>DESPESAS GERAIS</option>
+              <option value="Locação de máquinas e equipamentos" {% if request.GET.descricao == "Locação de máquinas e equipamentos" %}selected{% endif %}>Locação de máquinas e equipamentos</option>
+              <option value="Compra de máquinas e equipamentos" {% if request.GET.descricao == "Compra de máquinas e equipamentos" %}selected{% endif %}>Compra de máquinas e equipamentos</option>
+              <option value="" disabled>HONORÁRIOS DA DIRETORIA</option>
+              <option value="Encargos sociais com a diretoria" {% if request.GET.descricao == "Encargos sociais com a diretoria" %}selected{% endif %}>Encargos sociais com a diretoria</option>
+              <option value="Ajuda de custos da diretoria" {% if request.GET.descricao == "Ajuda de custos da diretoria" %}selected{% endif %}>Ajuda de custos da diretoria</option>
+              <option value="Outras despesas com a diretoria" {% if request.GET.descricao == "Outras despesas com a diretoria" %}selected{% endif %}>Outras despesas com a diretoria</option>
+              <option value="" disabled>DESPESAS COM EMPREGADOS</option>
+              <option value="Folha de pagamento" {% if request.GET.descricao == "Folha de pagamento" %}selected{% endif %}>Folha de pagamento</option>
+              <option value="Planos de previdência com empregados" {% if request.GET.descricao == "Planos de previdência com empregados" %}selected{% endif %}>Planos de previdência com empregados</option>
+              <option value="Encargos sociais com empregados" {% if request.GET.descricao == "Encargos sociais com empregados" %}selected{% endif %}>Encargos sociais com empregados</option>
+              <option value="Reversão de encargos sociais com empregados" {% if request.GET.descricao == "Reversão de encargos sociais com empregados" %}selected{% endif %}>Reversão de encargos sociais com empregados</option>
+              <option value="Outros gastos com empregados" {% if request.GET.descricao == "Outros gastos com empregados" %}selected{% endif %}>Outros gastos com empregados</option>
+              <option value="Alimentacao" {% if request.GET.descricao == "Alimentacao" %}selected{% endif %}>Alimentação</option>
+              <option value="" disabled>DESPESAS COM PESSOAS SEM VÍNCULO EMPREGATÍCIO</option>
+              <option value="Prestacao de servico por pessoa física sem vínculo empregatício" {% if request.GET.descricao == "Prestacao de servico por pessoa física sem vínculo empregatício" %}selected{% endif %}>Prestação de serviço por pessoa física sem vínculo empregatício</option>
+              <option value="Encargos sociais com por pessoa física sem vínculo empregatício" {% if request.GET.descricao == "Encargos sociais com por pessoa física sem vínculo empregatício" %}selected{% endif %}>Encargos sociais com por pessoa física sem vínculo empregatício</option>
+              <option value="Outros gastos com pessoas físicas sem vínculo empregatício" {% if request.GET.descricao == "Outros gastos com pessoas físicas sem vínculo empregatício" %}selected{% endif %}>Outros gastos com pessoas físicas sem vínculo empregatício</option>
+            </select>
+          </div>
+
+          <!-- Vínculo (Colaboradores e Fornecedores dinâmicos) -->
+          <div class="col-md-4">
+            <label class="form-label">Vínculo (CPF/CNPJ)</label>
+            <select name="vinculo" class="form-select">
+              <option value="">Todos os vínculos</option>
+              <option value="Movimentação entre contas" {% if request.GET.vinculo == "Movimentação entre contas" %}selected{% endif %}>Movimentação entre contas</option>
+              <option value="" disabled>Colaboradores</option>
+              {% for c in colaboradores %}
+              <option value="{{ c.cpf }}" {% if request.GET.vinculo == c.cpf %}selected{% endif %}>{{ c.nome }} | {{ c.cpf }}</option>
+              {% endfor %}
+              <option value="" disabled>Fornecedores</option>
+              {% for f in fornecedores %}
+              <option value="{{ f.cnpj }}" {% if request.GET.vinculo == f.cnpj %}selected{% endif %}>{{ f.razao_social }} | {{ f.cnpj }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Razão Social (Busca textual mantida) -->
+          <div class="col-md-4">
+            <label class="form-label">Razão Social</label>
+            <input type="text" name="nome_vinculo" class="form-control" value="{{ request.GET.nome_vinculo }}" placeholder="Buscar por Razão Social">
+          </div>
+
+          <!-- Entidade (Dynamic Select) -->
+          <div class="col-md-4">
+            <label class="form-label">Entidade</label>
+            <select name="entidade" class="form-select">
+              <option value="">Todas as entidades</option>
+              <option value="Sem vinculo a entidade" {% if request.GET.entidade == "Sem vinculo a entidade" %}selected{% endif %}>Sem vínculo à entidade</option>
+              {% for e in entidades %}
+              <option value="{{ e.id }}" {% if request.GET.entidade == e.id|stringformat:"s" %}selected{% endif %}>{{ e.razao_social }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Centro de Custo (Dynamic Select) -->
+          <div class="col-md-4">
+            <label class="form-label">Centro de Custo</label>
+            <select name="centrodecusto" class="form-select">
+              <option value="">Todos os centros de custo</option>
+              {% for c in centrosdecusto %}
+              <option value="{{ c.nome }}" {% if request.GET.centrodecusto == c.nome %}selected{% endif %}>{{ c.nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Contrato (Dynamic Select) -->
+          <div class="col-md-4">
+            <label class="form-label">Contrato</label>
+            <select name="contrato" class="form-select">
+              <option value="">Todos os contratos</option>
+              {% for c in contratos %}
+              <option value="{{ c.id }}" {% if request.GET.contrato == c.id|stringformat:"s" %}selected{% endif %}>
+                {{ c.nome_vinculo }} - De {{ c.data_inicio|slice:"8:10" }}/{{ c.data_inicio|slice:"5:7" }}/{{ c.data_inicio|slice:"0:4" }} à {{ c.data_fim|slice:"8:10" }}/{{ c.data_fim|slice:"5:7" }}/{{ c.data_fim|slice:"0:4" }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Fonte (Select estático) -->
+          <div class="col-md-4">
+            <label class="form-label">Fonte</label>
+            <select name="fonte" class="form-select">
+              <option value="">Todas as fontes</option>
+              <option value="Pública" {% if request.GET.fonte == "Pública" %}selected{% endif %}>Pública</option>
+              <option value="Privada" {% if request.GET.fonte == "Privada" %}selected{% endif %}>Privada</option>
+            </select>
+          </div>
+
+          <!-- Conta Bancária (Dynamic Select) -->
+          <div class="col-md-4">
+            <label class="form-label">Conta Bancária</label>
+            <select name="conta_bancaria" class="form-select">
+              <option value="">Todas as contas</option>
+              {% for c in contas %}
+              <option value="{{ c.id }}" {% if request.GET.conta_bancaria == c.id|stringformat:"s" %}selected{% endif %}>
+                {{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}
+              </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-4">
+            <label class="form-label">Status</label>
+            <input type="text" name="status" class="form-control" value="{{ request.GET.status }}" placeholder="Status da despesa">
+          </div>
+
+          <!-- Filtros de Intervalo -->
+          <div class="col-md-3">
+            <label class="form-label">Data Inicial</label>
+            <input type="date" name="data_inicio" class="form-control" value="{{ request.GET.data_inicio }}">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Data Final</label>
+            <input type="date" name="data_fim" class="form-control" value="{{ request.GET.data_fim }}">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Valor Mínimo</label>
+            <input type="number" step="0.01" name="valor_min" class="form-control" value="{{ request.GET.valor_min }}">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Valor Máximo</label>
+            <input type="number" step="0.01" name="valor_max" class="form-control" value="{{ request.GET.valor_max }}">
+          </div>
+
+        </div>
+
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Buscar Despesas</button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
