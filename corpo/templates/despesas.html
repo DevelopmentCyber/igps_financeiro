@@ -17,7 +17,7 @@
 <b>Valor total de pagamentos pendentes: </b> R$ <i id="valor_aberto"></i> 
 
 <a style="float: right; margin-left: 5px;" class="badge bg-danger" target="_blank" href="/relatorio_despesas/">Relatório GERAL em PDF</a> 
-<a style="float: right; cursor: pointer;" class="badge bg-success" onclick="exportarParaExcel()">Relatório GERAL em Excel</a>
+<a id="btn-exportar-excel" style="float: right; cursor: pointer;" class="badge bg-success" onclick="exportarParaExcel()">Relatório GERAL em Excel</a>
 
 <script>x = 0; y = 0</script>
 {% endblock %}
@@ -72,7 +72,7 @@
             <td style="background-color: #808080; color: white">{{ d.entidade }}</td>
             <td style="background-color: #808080; color: white" class="cnpj-cell">{{ d.vinculo }}</td>
             <td style="background-color: #808080; color: white" id="razao-social-{{ d.id }}" class="razao-social-cell">
-              <small><i>Carregando...</i></small>
+              <small><i>Na fila...</i></small>
             </td>
             <td style="background-color: #808080; color: white"><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
             <script>
@@ -89,7 +89,7 @@
             <td>{{ d.entidade }}</td>
             <td class="cnpj-cell">{{ d.vinculo }}</td>
             <td id="razao-social-{{ d.id }}" class="razao-social-cell">
-              <small><i>Carregando...</i></small>
+              <small><i>Na fila...</i></small>
             </td>
             <td><a href="/deletar_despesa/{{ d.id }}/" class="badge bg-danger">Apagar</a></td>
           </tr>
@@ -113,53 +113,73 @@
 </div>
 
 <script>
-// Cache em memória para não consultar o mesmo CNPJ várias vezes na API
 const cacheCNPJ = {};
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-function buscarRazaoSocial(cnpj, elementId) {
-    if (!cnpj) {
-        document.getElementById(elementId).innerText = "-";
-        return;
-    }
+// Lista de itens para consultar em fila
+const filaCNPJ = [
+    {% for d in despesas %}
+    { cnpj: "{{ d.vinculo }}", elementId: "razao-social-{{ d.id }}" },
+    {% endfor %}
+];
 
+async function consultarCNPJSingle(cnpj) {
     const cnpjLimpo = cnpj.replace(/\D/g, '');
+    
+    if (cnpjLimpo.length !== 14) return "-";
+    if (cacheCNPJ[cnpjLimpo]) return cacheCNPJ[cnpjLimpo];
 
-    if (cnpjLimpo.length !== 14) {
-        document.getElementById(elementId).innerText = "-";
-        return;
-    }
-
-    // Se já foi buscado anteriormente, aproveita o resultado
-    if (cacheCNPJ[cnpjLimpo]) {
-        document.getElementById(elementId).innerText = cacheCNPJ[cnpjLimpo];
-        return;
-    }
-
-    fetch('/consulta_cnpj/', {
-        method: 'POST',
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ cnpj: cnpjLimpo })
-    })
-    .then(res => res.json())
-    .then(data => {
+    try {
+        const response = await fetch('/consulta_cnpj/', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cnpj: cnpjLimpo })
+        });
+        const data = await response.json();
         const nomeSocial = data.nome || "Não encontrado";
         cacheCNPJ[cnpjLimpo] = nomeSocial;
-        document.getElementById(elementId).innerText = nomeSocial;
-    })
-    .catch(err => {
-        console.error("Erro ao buscar CNPJ:", err);
-        document.getElementById(elementId).innerText = "Erro na consulta";
-    });
+        return nomeSocial;
+    } catch (err) {
+        console.error("Erro na consulta do CNPJ:", err);
+        return "Erro na consulta";
+    }
 }
 
-// Inicializa a busca de CNPJs de todas as linhas ao carregar a página
+// Processa a fila um por um aguardando 3000ms (3s) entre requisições reais
+async function processarFilaCNPJ() {
+    for (let i = 0; i < filaCNPJ.length; i++) {
+        const item = filaCNPJ[i];
+        const el = document.getElementById(item.elementId);
+        const cnpjLimpo = item.cnpj ? item.cnpj.replace(/\D/g, '') : '';
+
+        if (!cnpjLimpo || cnpjLimpo.length !== 14) {
+            if (el) el.innerText = "-";
+            continue;
+        }
+
+        // Se já está em cache, não aguarda os 3 segundos
+        if (cacheCNPJ[cnpjLimpo]) {
+            if (el) el.innerText = cacheCNPJ[cnpjLimpo];
+            continue;
+        }
+
+        if (el) el.innerHTML = "<small><i>Consultando...</i></small>";
+
+        const resultado = await consultarCNPJSingle(item.cnpj);
+        if (el) el.innerText = resultado;
+
+        // Se houver mais itens na fila, aguarda 3 segundos antes da próxima consulta
+        if (i < filaCNPJ.length - 1) {
+            await delay(3000);
+        }
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
-    {% for d in despesas %}
-        buscarRazaoSocial("{{ d.vinculo }}", "razao-social-{{ d.id }}");
-    {% endfor %}
+    processarFilaCNPJ();
 });
 
 function autorizarConta(id) {
@@ -183,12 +203,10 @@ function autorizarConta(id) {
     });
 }
 
-// Exportação para Excel incluindo a Razão Social capturada
 function exportarParaExcel() {
     const tabela = document.getElementById("tabelaDespesas");
     const dados = [];
 
-    // Cabeçalho ajustado
     const cabecalho = ["ID", "Descrição", "Valor", "Data", "Entidade", "Vínculo (CNPJ)", "Razão Social"];
     dados.push(cabecalho);
 
@@ -197,7 +215,6 @@ function exportarParaExcel() {
         const colunas = linha.querySelectorAll("th, td");
         
         if (colunas.length >= 8) {
-            // Ajuste do offset se a primeira coluna contiver o botão 'Pagar'
             let offset = colunas.length > 8 ? 1 : 1; 
 
             let id = colunas[offset].innerText.trim();
@@ -215,15 +232,14 @@ function exportarParaExcel() {
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(dados);
 
-    // Larguras das colunas no arquivo Excel
     ws['!cols'] = [
-        { wch: 10 }, // ID
-        { wch: 35 }, // Descrição
-        { wch: 15 }, // Valor
-        { wch: 12 }, // Data
-        { wch: 25 }, // Entidade
-        { wch: 20 }, // Vínculo (CNPJ)
-        { wch: 40 }  // Razão Social
+        { wch: 10 },
+        { wch: 35 },
+        { wch: 15 },
+        { wch: 12 },
+        { wch: 25 },
+        { wch: 20 },
+        { wch: 40 }
     ];
 
     XLSX.utils.book_append_sheet(wb, ws, "Despesas");
