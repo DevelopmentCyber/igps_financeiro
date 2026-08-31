@@ -674,12 +674,14 @@ def tela_login(request):
             cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
 
             fornecedor = Fornecedor.objects.filter(cnpj=cnpj_limpo)
-            razao_social = fornecedor.razao_social
+            razao_social = ''
 
-            if razao_social:
-                ContasPagar.objects.filter(id=d.id).update(
-                    nome_vinculo=razao_social
-                )
+            for f in fornecedor:
+                razao_social = f.razao_social
+
+            ContasPagar.objects.filter(id=d.id).update(
+                nome_vinculo=razao_social
+            )
     try:
         user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
         user.save()
