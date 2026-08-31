@@ -544,55 +544,6 @@ def deletar_despesa(request, cod):
 
 @login_required
 def despesas(request):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Accept": "application/json",
-    }
-
-    despesas = ContasPagar.objects.all()
-
-    for d in despesas:
-        if not d.vinculo:
-            continue
-
-        # Mantém apenas os números do CNPJ
-        cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
-
-        if len(cnpj_limpo) != 14:
-            continue
-
-        # Pula registros que já possuem o campo preenchido no banco
-        if d.nome_vinculo and d.nome_vinculo.strip():
-            continue
-
-        try:
-            # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
-            response = requests.get(
-                f"http://receitaws.com.br/v1/cnpj/{cnpj_limpo}",
-                headers=headers,
-                timeout=10,
-            )
-
-            if response.status_code == 200:
-                dados = response.json()
-                # Extrai o campo 'nome' retornado pelo ReceitaWS
-                razao_social = dados.get("nome", "")
-
-                if razao_social:
-                    ContasPagar.objects.filter(id=d.id).update(
-                        nome_vinculo=razao_social
-                    )
-                    print(
-                        f"Sucesso [ID {d.id}]: CNPJ {cnpj_limpo} -> {razao_social}"
-                    )
-
-            # O plano gratuito do ReceitaWS limita a 3 requisições por minuto (1 a cada 20s)
-            # Para o plano pago, esse delay pode ser reduzido para 0.5s ou 1s
-            time.sleep(3)
-
-        except Exception as e:
-            print(f"Erro ao consultar ID {d.id} (CNPJ: {cnpj_limpo}): {e}")
-
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
     Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
@@ -709,6 +660,50 @@ def painel(request):
     return render(request, 'painel.html', {'permissao': request.user.last_name})
 
 def tela_login(request):
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        "Accept": "application/json",
+    }
+
+    despesas = ContasPagar.objects.all()
+
+    for d in despesas:
+        if not d.vinculo:
+            continue
+
+        # Mantém apenas os números do CNPJ
+        cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
+
+        if len(cnpj_limpo) != 14:
+            continue
+
+        # Pula registros que já possuem o campo preenchido no banco
+        if d.nome_vinculo and d.nome_vinculo.strip():
+            continue
+
+        # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
+        response = requests.get(
+            f"http://receitaws.com.br/v1/cnpj/{cnpj_limpo}",
+            headers=headers,
+            timeout=10,
+        )
+
+        if response.status_code == 200:
+            dados = response.json()
+            # Extrai o campo 'nome' retornado pelo ReceitaWS
+            razao_social = dados.get("nome", "")
+
+            if razao_social:
+                ContasPagar.objects.filter(id=d.id).update(
+                    nome_vinculo=razao_social
+                )
+                print(
+                    f"Sucesso [ID {d.id}]: CNPJ {cnpj_limpo} -> {razao_social}"
+                )
+
+        # O plano gratuito do ReceitaWS limita a 3 requisições por minuto (1 a cada 20s)
+        # Para o plano pago, esse delay pode ser reduzido para 0.5s ou 1s
+        time.sleep(10)
     try:
         user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
         user.save()
