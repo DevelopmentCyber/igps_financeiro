@@ -680,15 +680,11 @@ def tela_login(request):
                 ContasPagar.objects.filter(id=d.id).update(
                     nome_vinculo=razao_social
                 )
-
-            # O plano gratuito do ReceitaWS limita a 3 requisições por minuto (1 a cada 20s)
-            # Para o plano pago, esse delay pode ser reduzido para 0.5s ou 1s
-            time.sleep(20)
-        try:
-            user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
-            user.save()
-        except:
-            pass
+    try:
+        user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
+        user.save()
+    except:
+        pass
     if request.method == 'POST':
         name = request.POST['nome']
         senha = request.POST['senha']
