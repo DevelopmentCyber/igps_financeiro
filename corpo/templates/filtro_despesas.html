@@ -1,0 +1,88 @@
+{% extends 'painel.html' %}
+
+{% block content %}
+<div class="col-12">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">Filtrar Despesas</h5>
+
+      <form method="GET" action="{% url 'listar_despesas' %}">
+        <div class="row g-3">
+          
+          <div class="col-md-4">
+            <label class="form-label">Descrição</label>
+            <input type="text" name="descricao" class="form-control" value="{{ request.GET.descricao }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Entidade</label>
+            <input type="text" name="entidade" class="form-control" value="{{ request.GET.entidade }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Vínculo (CNPJ)</label>
+            <input type="text" name="vinculo" class="form-control" value="{{ request.GET.vinculo }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Razão Social</label>
+            <input type="text" name="nome_vinculo" class="form-control" value="{{ request.GET.nome_vinculo }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Status</label>
+            <input type="text" name="status" class="form-control" value="{{ request.GET.status }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Centro de Custo</label>
+            <input type="text" name="centrodecusto" class="form-control" value="{{ request.GET.centrodecusto }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Contrato</label>
+            <input type="text" name="contrato" class="form-control" value="{{ request.GET.contrato }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Fonte</label>
+            <input type="text" name="fonte" class="form-control" value="{{ request.GET.fonte }}">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Conta Bancária</label>
+            <input type="text" name="conta_bancaria" class="form-control" value="{{ request.GET.conta_bancaria }}">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Data Inicial</label>
+            <input type="date" name="data_inicio" class="form-control" value="{{ request.GET.data_inicio }}">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Data Final</label>
+            <input type="date" name="data_fim" class="form-control" value="{{ request.GET.data_fim }}">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Valor Mínimo</label>
+            <input type="number" step="0.01" name="valor_min" class="form-control" value="{{ request.GET.valor_min }}">
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label">Valor Máximo</label>
+            <input type="number" step="0.01" name="valor_max" class="form-control" value="{{ request.GET.valor_max }}">
+          </div>
+
+        </div>
+
+        <div class="mt-4">
+          <button type="submit" class="btn btn-primary">Buscar Despesas</button>
+          <a href="{% url 'listar_despesas' %}" class="btn btn-secondary">Limpar Filtros</a>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
