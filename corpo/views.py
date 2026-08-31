@@ -153,7 +153,7 @@ def filtro_despesa(request):
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
     Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
-    return render(request, 'filtro_despesa.html', {'permissao': request.user.last_name, 'despesas': ContasPagar.objects.filter(contrato=cod).order_by('-id')})
+    return render(request, 'filtro_despesa.html', {'permissao': request.user.last_name})
 
 @login_required
 def despesas_contrato(request, cod):
