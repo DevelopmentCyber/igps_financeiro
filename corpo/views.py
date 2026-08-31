@@ -668,17 +668,11 @@ def tela_login(request):
     despesas = ContasPagar.objects.all()
 
     for d in despesas:
-        if not d.vinculo:
-            continue
 
         # Mantém apenas os números do CNPJ
         cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
 
         if len(cnpj_limpo) != 14:
-            continue
-
-        # Pula registros que já possuem o campo preenchido no banco
-        if d.nome_vinculo and d.nome_vinculo.strip():
             continue
 
         # Requisição idêntica ao seu trecho: HTTP do ReceitaWS
