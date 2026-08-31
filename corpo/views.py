@@ -149,7 +149,7 @@ def nova_conta_receber(request):
 ###########################
 
 @login_required
-def filtro_despesas(request):
+def filtro_contas_pagar(request):
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
     Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
