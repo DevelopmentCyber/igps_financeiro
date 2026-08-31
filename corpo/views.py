@@ -149,13 +149,6 @@ def nova_conta_receber(request):
 ###########################
 
 @login_required
-def filtro_contas_pagar(request):
-    localizar_ip = LocationService()
-    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
-    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
-    return render(request, 'filtro_contas_pagar.html', {'permissao': request.user.last_name})
-
-@login_required
 def despesas_contrato(request, cod):
     localizar_ip = LocationService()
     resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
@@ -502,6 +495,15 @@ def novo_fornecedor(request):
 ################################
 ##       CONTAS A PAGAR       ##
 ################################
+
+@login_required
+def filtro_contas_pagar(request):
+    localizar_ip = LocationService()
+    resultado = localizar_ip.get_location(str(request.META.get('REMOTE_ADDR')))
+    Logs(usuario=request.user, data_hora=datetime.now(), dados_post='', dados_pc_acesso=request.META.get('HTTP_USER_AGENT', ''), ip=request.META.get('REMOTE_ADDR'), tipo_acesso=request.method, pagina=request.path, endereco=resultado).save()
+    return render(request, 'filtro_contas_pagar.html', {'permissao': request.user.last_name, 'colaboradores': Colaboradores.objects.filter(status=''), 'msg': msg,
+    'entidades': Entidade.objects.filter(status=''), 'fornecedores': Fornecedor.objects.filter(status=''), 'centrosdecusto': CentroCusto.objects.filter(status=''),
+    'contratos': ContratoReceita.objects.filter(status=''), 'contas': ContaBancaria.objects.filter(status='')})
 
 @login_required
 def relatorio_despesas(request):
