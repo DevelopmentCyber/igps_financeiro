@@ -113,6 +113,33 @@
 </div>
 
 <script>
+// Estrutura com todos os campos do Model renderizados pelo Django
+const dadosDespesas = [
+    {% for d in despesas %}
+    {
+        id: "{{ d.id|default:'' }}",
+        descricao: "{{ d.descricao|escapejs }}",
+        valor: "{{ d.valor|default:'' }}",
+        data: "{{ d.data|default:'' }}",
+        entidade: "{{ d.entidade|escapejs }}",
+        vinculo: "{{ d.vinculo|default:'' }}",
+        nome_vinculo: "{{ d.nome_vinculo|default:''|escapejs }}",
+        usuario_cadastro: "{{ d.usuario_cadastro|default:''|escapejs }}",
+        obs: "{{ d.obs|default:''|escapejs }}",
+        status: "{{ d.status|default:''|escapejs }}",
+        lat: "{{ d.lat|default:'' }}",
+        long: "{{ d.long|default:'' }}",
+        centrodecusto: "{{ d.centrodecusto|default:''|escapejs }}",
+        contrato: "{{ d.contrato|default:''|escapejs }}",
+        fonte: "{{ d.fonte|default:''|escapejs }}",
+        conta_bancaria: "{{ d.conta_bancaria|default:''|escapejs }}",
+        autorizacao: "{{ d.autorizacao|default:''|escapejs }}",
+        comprovante_pagamento: "{% if d.comprovante_pagamento %}{{ request.scheme }}://{{ request.get_host }}{{ d.comprovante_pagamento.url }}{% endif %}",
+        nota_fatura: "{% if d.nota_fatura %}{{ request.scheme }}://{{ request.get_host }}{{ d.nota_fatura.url }}{% endif %}"
+    },
+    {% endfor %}
+];
+
 function autorizarConta(id) {
     fetch(`/autorizar_conta/${id}/`, {
         method: 'GET',
@@ -135,46 +162,70 @@ function autorizarConta(id) {
 }
 
 function exportarParaExcel() {
-    const tabela = document.getElementById("tabelaDespesas");
     const dados = [];
 
-    const cabecalho = ["ID", "Descrição", "Valor", "Data", "Entidade", "Vínculo (CNPJ)", "Razão Social"];
+    // Cabeçalho completo com todos os campos da Model
+    const cabecalho = [
+        "ID", "Descrição", "Valor", "Data", "Entidade", "Vínculo (CNPJ)", "Razão Social",
+        "Usuário Cadastro", "Observação", "Status", "Centro de Custo", "Contrato",
+        "Fonte", "Conta Bancária", "Autorização", "Latitude", "Longitude",
+        "Comprovante de Pagamento", "Nota / Fatura"
+    ];
     dados.push(cabecalho);
 
-    const linhas = tabela.querySelectorAll("tbody tr");
-    linhas.forEach(linha => {
-        const colunas = linha.querySelectorAll("th, td");
-        
-        if (colunas.length >= 8) {
-            let offset = colunas.length > 8 ? 1 : 1; 
-
-            let id = colunas[offset].innerText.trim();
-            let descricao = colunas[offset + 1].innerText.trim();
-            let valor = colunas[offset + 2].innerText.trim();
-            let data = colunas[offset + 3].innerText.trim();
-            let entidade = colunas[offset + 4].innerText.trim();
-            let vinculo = colunas[offset + 5].innerText.trim();
-            let razaoSocial = colunas[offset + 6].innerText.trim();
-
-            dados.push([id, descricao, valor, data, entidade, vinculo, razaoSocial]);
-        }
+    // Itera sobre o array de objetos completo gerado pelo Django
+    dadosDespesas.forEach(d => {
+        dados.push([
+            d.id,
+            d.descricao,
+            d.valor,
+            d.data,
+            d.entidade,
+            d.vinculo,
+            d.nome_vinculo,
+            d.usuario_cadastro,
+            d.obs,
+            d.status,
+            d.centrodecusto,
+            d.contrato,
+            d.fonte,
+            d.conta_bancaria,
+            d.autorizacao,
+            d.lat,
+            d.long,
+            d.comprovante_pagamento,
+            d.nota_fatura
+        ]);
     });
 
     const wb = XLSX.utils.book_new();
     const ws = XLSX.utils.aoa_to_sheet(dados);
 
+    // Ajusta as larguras das colunas para visualização adequada
     ws['!cols'] = [
-        { wch: 10 },
-        { wch: 35 },
-        { wch: 15 },
-        { wch: 12 },
-        { wch: 25 },
-        { wch: 20 },
-        { wch: 40 }
+        { wch: 8 },   // ID
+        { wch: 30 },  // Descrição
+        { wch: 15 },  // Valor
+        { wch: 12 },  // Data
+        { wch: 20 },  // Entidade
+        { wch: 18 },  // CNPJ
+        { wch: 35 },  // Razão Social
+        { wch: 20 },  // Usuário
+        { wch: 30 },  // Obs
+        { wch: 15 },  // Status
+        { wch: 20 },  // Centro Custo
+        { wch: 15 },  // Contrato
+        { wch: 15 },  // Fonte
+        { wch: 20 },  // Conta Bancária
+        { wch: 15 },  // Autorização
+        { wch: 12 },  // Lat
+        { wch: 12 },  // Long
+        { wch: 55 },  // Comprovante
+        { wch: 55 }   // Nota/Fatura
     ];
 
-    XLSX.utils.book_append_sheet(wb, ws, "Despesas");
-    XLSX.writeFile(wb, "relatorio_despesas.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Despesas_Completas");
+    XLSX.writeFile(wb, "relatorio_despesas_completo.xlsx");
 }
 </script>
 

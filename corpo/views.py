@@ -660,28 +660,6 @@ def painel(request):
     return render(request, 'painel.html', {'permissao': request.user.last_name})
 
 def tela_login(request):
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
-        "Accept": "application/json",
-    }
-
-    despesas = ContasPagar.objects.all()
-
-    for d in despesas:
-        if d.id != 2 or d.id != 4:
-
-            # Mantém apenas os números do CNPJ
-            cnpj_limpo = d.vinculo
-
-            fornecedor = Fornecedor.objects.filter(cnpj=cnpj_limpo)
-            razao_social = ''
-
-            for f in fornecedor:
-                razao_social = f.razao_social
-
-            ContasPagar.objects.filter(id=d.id).update(
-                nome_vinculo=razao_social
-            )
     try:
         user = User.objects.create_user('kanandabarros.igps','nandabarros58@gmail.com','@melhordev', last_name="FINANCEIRO; ADM")
         user.save()
