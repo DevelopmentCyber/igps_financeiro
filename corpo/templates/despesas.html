@@ -173,7 +173,7 @@ async function processarFilaCNPJ() {
 
         // Se houver mais itens na fila, aguarda 3 segundos antes da próxima consulta
         if (i < filaCNPJ.length - 1) {
-            await delay(5000);
+            await delay(10000);
         }
     }
 }
