@@ -671,7 +671,7 @@ def tela_login(request):
         if d.id != 2 or d.id != 4:
 
             # Mantém apenas os números do CNPJ
-            cnpj_limpo = "".join(filter(str.isdigit, str(d.vinculo)))
+            cnpj_limpo = d.vinculo
 
             fornecedor = Fornecedor.objects.filter(cnpj=cnpj_limpo)
             razao_social = ''
