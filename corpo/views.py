@@ -650,7 +650,7 @@ def pre_nova_despesa(request):
 @login_required
 def despesas_autorizadas(request):
     despesas = ContasPagar.objects.filter(status='', autorizacao='Autorizado')
-    
+
     descricao = request.GET.get('descricao')
     entidade = request.GET.get('entidade')
     vinculo = request.GET.get('vinculo')
