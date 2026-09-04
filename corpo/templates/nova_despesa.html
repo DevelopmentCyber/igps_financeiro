@@ -325,9 +325,9 @@
                 <option value="Fornecedores" disabled>Fornecedores</option>
                 {% for f in fornecedores %}
                     {% if f.cnpj == p.vinculo %}
-                    <option value="{{ f.cnpj }}-{{ f.razao_social }}" selected>{{ f.razao_social }} | {{ f.cnpj }}</option>
+                    <option value="{{ f.cnpj }};{{ f.razao_social }}" selected>{{ f.razao_social }} | {{ f.cnpj }}</option>
                     {% else %}
-                    <option value="{{ f.cnpj }}-{{ f.razao_social }}">{{ f.razao_social }} | {{ f.cnpj }}</option>
+                    <option value="{{ f.cnpj }};{{ f.razao_social }}">{{ f.razao_social }} | {{ f.cnpj }}</option>
                     {% endif %}
                 {% endfor %}
             </select>

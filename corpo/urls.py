@@ -41,6 +41,7 @@ urlpatterns = [
     #Despesas 
     url(r'despesas_autorizadas/', views.despesas_autorizadas, name="despesas_autorizadas"),
     url(r'autorizar_conta/(?P<cod>[0-9]+)/', views.autorizar_conta, name="autorizar_conta"),
+    url(r'editar_despesa/(?P<cod>[0-9]+)/', views.editar_despesa, name="editar_despesa"),
     url(r'relatorio_despesas/', views.relatorio_despesas, name="relatorio_despesas"),
     url(r'ver_despesa/(?P<cod>[0-9]+)/', views.ver_despesa, name="ver_despesa"),
     url(r'deletar_despesa/(?P<cod>[0-9]+)/', views.deletar_despesa, name="deletar_despesa"),

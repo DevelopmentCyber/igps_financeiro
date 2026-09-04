@@ -25,14 +25,12 @@
     }
 </style>
                                 
-<form method="POST" enctype="multipart/form-data">{% csrf_token %}
-    <a href="/editar_despesa/{{ cod }}/">Habilitar edição de dados</a>
-    <br><br>
-    {% for p in cadastro %}
+<form method="POST">{% csrf_token %}
+    {% for p in contas_pagar %}
     <div style="float: left; width: 100%">
         <div style="float: left; width: 50%;">
             Descrição: <br>
-            <select name="descricao" disabled>
+            <select name="descricao">
                 <option value="" disabled>CAIXA GERAL</option>
                 {% if p.descricao == 'Aplicações' %}
                 <option value="Aplicações" selected>Aplicações</option>
@@ -162,6 +160,12 @@
                 <option value="Variações monetárias" selected>Variações monetárias</option>
                 {% else %}
                 <option value="Variações monetárias">Variações monetárias</option>
+                {% endif %}
+
+                {% if p.descricao == 'Tarifas bancárias' %}
+                <option value="Tarifas bancárias" selected>Tarifas bancárias</option>
+                {% else %}
+                <option value="Tarifas bancárias">Tarifas bancárias</option>
                 {% endif %}
 
                 {% if p.descricao == 'Outras despesas financeiras' %}
@@ -294,7 +298,7 @@
         </div>
         <div style="float: left; width: 50%;">
             Valor: <br>
-            <input type="text" name="valor" disabled required="required" value="{{ p.valor }}" id="valor" placeholder="R$ 1.000.000,00">
+            <input type="text" name="valor" required="required" value="{{ p.valor }}" id="valor" placeholder="R$ 1.000.000,00">
             <br><br>
         </div>
     </div>
@@ -302,22 +306,30 @@
     <div style="float: left; width: 100%">
         <div style="float: left; width: 30%;">
             Data: <br>
-            <input type="date" required="required" disabled value="{{ p.data }}" name="data">
+            <input type="date" required="required" value="{{ p.data }}" name="data">
             <br><br>
         </div>
         <div style="float: left; width: 70%;">
             Vínculo: <br>
-            <select name="vinculo" disabled id="">
-                <option value="Movimentação entre contas">Movimentação entre contas</option>
+            <select name="vinculo" id="">
+                <option value="0;Movimentação entre contas">Movimentação entre contas</option>
                 <option value="Colaboradores" disabled>Colaboradores</option>
                 {% for c in colaboradores %}
                     {% if c.cpf in p.vinculo %}
-                    <option value="{{ c.cpf }}" selected>{{ c.nome }} | {{ c.cpf }}</option>
+                    <option value="{{ c.cpf }};{{ c.nome }}" selected>{{ c.nome }} | {{ c.cpf }}</option>
                     {% else %}
-                    <option value="{{ c.cpf }}">{{ c.nome }} | {{ c.cpf }}</option>
+                    <option value="{{ c.cpf }};{{ c.nome }}">{{ c.nome }} | {{ c.cpf }}</option>
                     {% endif %}
                 {% endfor %}
+                
                 <option value="Fornecedores" disabled>Fornecedores</option>
+                {% for f in fornecedores %}
+                    {% if f.cnpj in p.vinculo %}
+                    <option value="{{ f.cnpj }};{{ f.razao_social }}" selected>{{ f.razao_social }} | {{ f.cnpj }}</option>
+                    {% else %}
+                    <option value="{{ f.cnpj }};{{ f.razao_social }}">{{ f.razao_social }} | {{ f.cnpj }}</option>
+                    {% endif %}
+                {% endfor %}
             </select>
             <br><br>
         </div>
@@ -326,7 +338,7 @@
     <div style="float: left; width: 100%">
         <div style="float: left; width: 50%;">
             Entidade: <br>
-            <select disabled name="entidade" id="">
+            <select name="entidade" id="">
                 <option value="Sem vinculo a entidade">Sem vínculo à entidade</option>
                 {% for e in entidades %}
                     {% if e.id|stringformat:"s" in p.entidade %}
@@ -339,67 +351,63 @@
             <br><br>
         </div>
         <div style="float: left; width: 50%;">
-            Obs: <br>
-            <textarea disabled name="obs">{{ p.obs }}</textarea>
+            Centro de custo: <br>
+            <select name="centrodecusto" id="">
+                {% for c in centrosdecusto %}
+                    {% if p.centrodecusto|stringformat:"s" == c.id|stringformat:"s" %}
+                        <option value="{{ c.id }}" selected>{{ c.nome }}</option>
+                    {% else %}
+                        <option value="{{ c.id }}">{{ c.nome }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
             <br><br>
         </div>
+    </div>
+
+    <div style="float: left; width: 100%">
+        <div style="float: left; width: 50%;">
+            Obs: <br>
+            <textarea name="obs">{{ p.obs }}</textarea>
+            <br><br>
+        </div>
+        <div style="float: left; width: 50%;">
+            Contrato: <br>
+            <select name="contrato">
+                {% for c in contratos %}
+                <option value="" {% if "" == p.contrato|stringformat:"s" %} selected {% endif %}>Despesa não vinculada</option>
+                <option value="{{ c.id }}" {% if c.id|stringformat:"s" == p.contrato|stringformat:"s" %} selected {% endif %} >
+                    {{ c.nome_vinculo }} - De {{ c.data_inicio|slice:"8:10" }}/{{ c.data_inicio|slice:"5:7" }}/{{ c.data_inicio|slice:"0:4" }} à {{ c.data_fim|slice:"8:10" }}/{{ c.data_fim|slice:"5:7" }}/{{ c.data_fim|slice:"0:4" }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>        
     </div>
     <div style="float: left; width: 100%">
         <div style="float: left; width: 50%;">
-            <br>
-            <input style="display: none;" type="file" name="comprovante_pagamento" accept="*.jpeg, *.png, *.jpg" id="anexo_comprovante_pagamento">
-            <b>Comprovante de pagamento:</b> <br>
-            <label for="anexo_comprovante_pagamento" id="campo-comprovante_pagamento" style="border: 1px dashed black; background-color: white; width: 80%; height: 400px; text-align: center; margin: 0 auto">
-                <svg style="width: 50%; text-align: center; margin: 0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
-                <div style="width: 100%; height: 100px; background-color: #259; color: white"><br><h2>Substituir</h2></div>
-            </label>
-            <script>
-                if (!('{{ p.comprovante_pagamento }}' == '')) {
-                    document.getElementById('campo-comprovante_pagamento').innerHTML = '<iframe src="/media/{{ p.comprovante_pagamento }}" id="rg-preview" style="width: 100%; height: 300px" alt=""></iframe><div style="width: 100%; height: 100px; background-color: #259; color: white"><br><h2>Substituir</h2></div>'
-                }
-                function readImageComprovantePagamento() {
-                    if (this.files && this.files[0]) {
-                        var file = new FileReader();
-                        file.onload = function(e) {
-                            document.getElementById('campo-comprovante_pagamento').innerHTML = '<iframe src="" id="comprovante_pagamento-preview" style="width: 100%; height: 370px" alt="" />'
-                            document.getElementById("comprovante_pagamento-preview").src = e.target.result;
-                        };       
-                        file.readAsDataURL(this.files[0]);
-                    }
-                }
-                document.getElementById("anexo_comprovante_pagamento").addEventListener("change", readImageComprovantePagamento, false);
-            </script>
+        Fonte: <br>
+        <select name="fonte" id="fonte">
+            <option value="Pública">Pública</option>
+            <option value="Privada" {% if "Privada" == p.fonte %} selected {% endif %}>Privada</option>
+        </select>
         </div>
         <div style="float: left; width: 50%;">
-            <br>
-            <input style="display: none;" type="file" name="nota_fatura" accept="*.jpeg, *.png, *.jpg" id="anexo_nota_fatura">
-            <b>Nota fiscal/Fatura/Contracheque:</b> <br>
-            <label for="anexo_nota_fatura" id="campo-nota_fatura" style="border: 1px dashed black; background-color: white; width: 80%; height: 400px; text-align: center; margin: 0 auto">
-                <br><br>
-                <svg style="width: 50%; text-align: center; margin: 0 auto" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.--><path d="M288 32c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 242.7-73.4-73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l128-128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L288 274.7 288 32zM64 352c-35.3 0-64 28.7-64 64l0 32c0 35.3 28.7 64 64 64l384 0c35.3 0 64-28.7 64-64l0-32c0-35.3-28.7-64-64-64l-101.5 0-45.3 45.3c-25 25-65.5 25-90.5 0L165.5 352 64 352zm368 56a24 24 0 1 1 0 48 24 24 0 1 1 0-48z"/></svg>
-                <div style="width: 100%; height: 100px; background-color: #259; color: white"><br><h2>Substituir</h2></div>
-            </label>
-            <script>
-                if (!('{{ p.nota_fatura }}' == '')) {
-                    document.getElementById('campo-nota_fatura').innerHTML = '<iframe src="/media/{{ p.nota_fatura }}" id="rg-preview" style="width: 100%; height: 300px" alt=""></iframe><div style="width: 100%; height: 100px; background-color: #259; color: white"><br><h2>Substituir</h2></div>'
-                }
-                function readImageNota() {
-                    if (this.files && this.files[0]) {
-                        var file = new FileReader();
-                        file.onload = function(e) {
-                            document.getElementById('campo-nota_fatura').innerHTML = '<iframe src="" id="nota_fatura-preview" style="width: 100%; height: 370px" alt="" />'
-                            document.getElementById("nota_fatura-preview").src = e.target.result;
-                        };       
-                        file.readAsDataURL(this.files[0]);
-                    }
-                }
-                document.getElementById("anexo_nota_fatura").addEventListener("change", readImageNota, false);
-            </script>
-            <br><br>
+            Conta bancária: <br>
+            <select name="conta_bancaria" id="conta_bancaria">
+                {% for c in contas %}
+                <option value="{{ c.id }}" {% if c.id|stringformat:"s" == p.conta_bancaria|stringformat:"s" %} selected {% endif %}>{{ c.apelido }} | Ag. {{ c.agencia }} | Conta: {{ c.conta }} | Banco: {{ c.banco }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
     {% endfor %}
-        <br><br>
+    <br><br>
+    
+    <div style="display: none;">
+        <input id="long" name="long">
+        <input id="lat" name="lat">
+    </div>
+    <br><br>
     <button style="padding: 10px; border-radius: 10px;" id="botao"><i class="fas fa-save"></i> Salvar</button>
     <br><br>       
 </form>
